@@ -1,0 +1,201 @@
+h1 {
+    margin: 10px;
+    padding: .3em .70em;
+    background-color: #f6f6f6;
+    font-size: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+}
+
+body {
+    width: 1400px;
+    margin: 5px auto;
+    font-family: arial;
+    background-color: white;
+    color: black;
+}
+
+input[type="text"],
+textarea {
+    outline: none;
+    border: 1px solid #aaa;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+    border-radius: 5px;
+    padding: 10px;
+    //margin: 5px;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    box-shadow: 0 0 7px #1abc9c;
+    border: 1px solid #1abc9c;
+}
+
+#controller {
+    min-height: 105px;
+}
+
+div {
+    //width: auto;
+    //margin: auto;
+    background-color: white;
+}
+
+p {
+    margin: 0px;
+    font-family: arial;
+    font-size: 18px;
+    //width: auto;
+    //margin: auto;
+    background-color: white;
+}
+
+td {
+    vertical-align: top;
+}
+
+input.button_page {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 20px;
+    color: #ffffff;
+    border-style: none;
+
+    /* ボタンの影の指定
+     * 影の横幅を2px
+     * 縦長を2px
+     * ぼかしを3px
+     * 広がりを1px
+     * 色を#666（グレー）に指定 */
+    box-shadow: 2px 2px 3px 1px #606060;
+    -moz-box-shadow: 2px 2px 3px 1px #606060;
+    -webkit-box-shadow: 2px 2px 3px 1px #606060;
+
+    /* テキストの影の指定
+     * 影の横幅を1px
+     * 縦長を1px
+     * ぼかしを2px
+     * 色を#000（黒）に指定 */
+    text-shadow: 1px 1px 2px #000000;
+    background: #3060d0; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#3060d0, #204080, #3060d0); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#3060d0, #204080, #3060d0); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#3060d0, #204080, #3060d0); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#3060d0, #204080, #3060d0); /* Standard syntax */
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+input.button_graph {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 20px;
+    color: #ffffff;
+    border-style: none;
+
+    /* ボタンの影の指定
+     * 影の横幅を2px
+     * 縦長を2px
+     * ぼかしを3px
+     * 広がりを1px
+     * 色を#666（グレー）に指定 */
+    box-shadow: 2px 2px 3px 1px #606060;
+    -moz-box-shadow: 2px 2px 3px 1px #606060;
+    -webkit-box-shadow: 2px 2px 3px 1px #606060;
+
+    /* テキストの影の指定
+     * 影の横幅を1px
+     * 縦長を1px
+     * ぼかしを2px
+     * 色を#000（黒）に指定 */
+    text-shadow: 1px 1px 2px #000000;
+    background: #ff7f50; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#ff4500, #ff7f50, #ff4500); /* Standard syntax */
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+input.button_graph_on {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 20px;
+    color: #ffffff;
+    border-style: none;
+
+    /* ボタンの影の指定
+     * 影の横幅を2px
+     * 縦長を2px
+     * ぼかしを3px
+     * 広がりを1px
+     * 色を#666（グレー）に指定 */
+
+    /* テキストの影の指定
+     * 影の横幅を1px
+     * 縦長を1px
+     * ぼかしを2px
+     * 色を#000（黒）に指定 */
+    text-shadow: 1px 1px 2px #000000;
+    background: #ff7f50; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#ff4500, #ff7f50, #ff4500); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#ff4500, #ff7f50, #ff4500); /* Standard syntax */
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+input.button_graph_gray {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 8px 20px;
+    color: #a9a9a9;
+    border-style: none;
+
+    /* ボタンの影の指定
+     * 影の横幅を2px
+     * 縦長を2px
+     * ぼかしを3px
+     * 広がりを1px
+     * 色を#a9a9a9（グレー）に指定 */
+
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+svg text {
+    margin: 0;
+    padding: 0;
+    font-family: arial;
+    font-size:18px;
+    color: black;
+}
+
+rect {
+    shape-rendering:crispEdges;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: arial;
+    font-size: 11px;
+    color: white;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3.0px;
+}
+

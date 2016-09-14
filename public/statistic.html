@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Statistic Page</title>
+</head>
+<body>
+    <script src="/js/d3/d3.min.js"></script>
+    <script src="/js/struct.js"></script>
+    <script src="/js/client.js"></script>
+    <script src="/js/PageStatistic.js"></script>
+    <script src="/js/BarController.js"></script>
+    <script src="/js/Histogram.js"></script>
+    <script src="/js/BoxGraph.js"></script>
+    <script src="/js/BarGraph.js"></script>
+    <script src="/session_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/client.css" />
+    <h1>Statistic Page</h1>
+    <form method="post" action="/statistic.html" style="float: right;">
+        <input type="text" name="path_csv" id="path_csv" placeholder="The path to CSV file" size="40" /><br>
+    </form>
+    <div class="button" style="margin:10px;">
+        <input type="button" class="button_page" id="button_graphic_page" value="Graphic Page" />
+        <input type="button" class="button_page" id="button_reset_time" value="Reset Time" />
+        <input type="button" class="button_page" id="button_reset_view" value="Reset View" />
+    </div>
+    <div id="controller"></div>
+    <table border="5" width="100%" cellspacing=0>
+        <tr>
+            <td rowspan=3 width="1000px" height="700px">
+                <div id="graph_box"></div>
+            </td>
+            <td width="350px" height="110px">
+                <p>Property</p>
+                <div id="property"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="350px" height="300px">
+                <div id="histogram"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="350px" height="300px">
+                <div id="graph_bar"></div>
+            </td>
+        </tr>
+    </table>
+    <script>
+        GetCSVFile("input.csv", PlotPageStatistic);
+    </script>
+</body>
+</html>
