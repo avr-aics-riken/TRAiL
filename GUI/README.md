@@ -1,29 +1,37 @@
-TRAiL-GUI
-========
+# TRAiL-GUI
 
 GUI for TRAiL
 
-----
-# Requires
+## Requires
 node.js : 4.4 or higher
 
-# Installation
-	 - MacOSX / Linux
-     $cd bin
-     $sh install.sh
-     - Windows
-     bin/install.bat ‚ðŽÀs
-     
-# Run
-	 - MacOSX / Linux
-     $cd bin
-     $sh run_TRAiL.sh
-     - Windows
-     bin/run_TRAiL.bat ‚ðŽÀs
-     
-     ACCESS>> http://localhost:8080/
+## Installation
+- MacOSX / Linux
+```bash
+$ cd bin  
+$ sh install.sh
+```
 
-# Dependents
+- Windows  
+```
+Run bin/install.bat
+```
+     
+## Run
+- MacOSX / Linux  
+```bash
+$ cd bin  
+$ sh run_TRAiL.sh
+```
+
+- Windows
+```
+Run bin/run_TRAiL.bat
+```
+
+  ACCESS>> http://localhost:8080/
+
+## Dependents
 
 - express (https://github.com/expressjs/express)
 - express-session (https://github.com/expressjs/session)

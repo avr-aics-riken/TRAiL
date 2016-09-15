@@ -1,25 +1,26 @@
-pmotfcsv
-========
+# pmotfcsv
 
 Converter to CSV file from OTF1 data for TRAiL
 
-----
-# Requires
+## Requires
 - OpenMPI : 1.10.2 or higher
 - OTF salmon : 1.12.5
 
-# Installation
+## Installation
 	 - MacOSX / Linux
-     $./configure --prefix=/usr/local CPPFLAGS="-I~/OTF-1.12.5salmon/otflib" LDFLAGS="-L/usr/local/lib" LIBS=-lopen-trace-format CXX=mpicxx CC=mpicc CXXFLAGS="-O3" CFLAGS="-O3"
+```bash
+$ ./configure --prefix=/usr/local CPPFLAGS="-I~/OTF-1.12.5salmon/otflib" LDFLAGS="-L/usr/local/lib" LIBS=-lopen-trace-format CXX=mpicxx CC=mpicc CXXFLAGS="-O3" CFLAGS="-O3"
+$ make
+$ sudo make install
+```
 
-     $make
-     $sudo make install
-     
-# Run
+## Run
 	 - MacOSX / Linux
-     $pmotfcsv input.otf output.csv
+```bash
+$ pmotfcsv input.otf output.csv
+```
      
-# Dependents
+## Dependents
 
 - OpenMPI (https://www.open-mpi.org/)
 - OTF salmon (https://tu-dresden.de/die_tu_dresden/zentrale_einrichtungen/zih/forschung/projekte/otf/)
