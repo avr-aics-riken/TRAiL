@@ -25,6 +25,10 @@ div {
     background-color: white;
 }
 
+div.dialog {
+    background-color: black;
+}
+
 p {
     margin: 0px;
     font-family: arial;

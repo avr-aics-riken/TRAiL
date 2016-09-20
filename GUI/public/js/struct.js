@@ -1,4 +1,6 @@
 ShareData = function () {
+    this.file_name = "";
+    this.num_rank = 0;
     this.updater = new Updater();
     this.range_limit = new Array();
     this.range_active = new Array();

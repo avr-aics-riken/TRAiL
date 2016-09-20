@@ -50,3 +50,14 @@ input.button_page {
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
+
+label.input_file {
+    color: white;  
+    background-color: seagreen;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+input.path_file {
+    width: 240px;
+}

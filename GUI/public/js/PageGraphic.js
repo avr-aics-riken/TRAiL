@@ -148,4 +148,3 @@ function PlotPageGraphic(csvArray) {
         share.updater.Run();
     }
 }
-
