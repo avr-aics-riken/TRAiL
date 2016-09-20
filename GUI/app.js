@@ -3,10 +3,13 @@ var fs = require('fs');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
+var multer = require('multer');
+var url = require('url');
 var settings = require('./settings');
-var server = http.createServer();
 
 var app = express();
+var server = http.createServer();
+var upload = multer({ dest: 'public/uploads/' });
 
 //セッション設定
 app.use(session({
@@ -14,92 +17,67 @@ app.use(session({
 }));
 app.use(bodyParser());
 
+
 //ルーティング設定
 app.get('/', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    ResponsFile(res, '/statistic.html');
+    res.redirect('/home.html');
 });
 
 app.post('/', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    SetSession(req);
-    ResponsFile(res, '/statistic.html');
+    res.redirect('/home.html');
 });
 
-app.get('/statistic.html', function (req, res) {
+app.get('/*.html', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.post('/statistic.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    SetSession(req);
-    ResponsFile(res, req.url);
-});
-
-app.get('/graphic.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    ResponsFile(res, req.url);
-});
-
-app.post('/graphic.html', function (req, res) {
+app.post('/*.html', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
     SetSession(req);
     ResponsFile(res, req.url);
 });
 
-app.get('/js/d3/d3.min.js', function (req, res) {
+app.get('/js/*.js', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/javascript', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.get('/js/client.js', function (req, res) {
+app.get('/css/*.css', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/css', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.get('/js/struct.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
+app.post('/upload', function (req, res) {
+    upload.single('file_csv')(req, res, function (err) {
+        if (err) {
+            res.redirect('/home.html');
+            return;
+        }
 
-app.get('/js/PageStatistic.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
+        if (typeof req.file !== 'undefined') {
+            req.session.path_csv = req.file.path;
+        }
 
-app.get('/js/PageGraphic.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        if (typeof query.url_next === 'undefined') {
+            res.redirect('/home.html');
+        } else {
+            res.redirect(query.url_next);
+        }
+    });
+})
 
-app.get('/js/BarController.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/Histogram.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/BoxGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/BarGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/LineGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/Matrix.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/css/client.css', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/css' });
-    ResponsFile(res, req.url);
-});
+app.post('/upload', upload.single('file_csv'), function (req, res, next) {
+    req.session.path_csv = req.file.path;
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+    res.redirect(query.url_next);
+})
 
 app.get('/input.csv', function (req, res) {
     if (req.session.path_csv) {
-        //console.log('csv file:' + req.session.path_csv);
         ResponsCsv(req, res, req.session.path_csv);
     } else {
         ResponsCsv(req, res, __dirname + req.url);
@@ -155,6 +133,10 @@ app.get('/session_data.js', function (req, res) {
     res.end();
 });
 
+app.listen(settings.port);
+console.log('Server running at http://localhost:' + settings.port + '/');
+ClearUploadedFiles();
+
 function SetSession(req) {
     if (req.body.path_csv && req.body.path_csv != req.session.path_csv) {
         req.session.path_csv = req.body.path_csv;
@@ -198,8 +180,8 @@ function SetSession(req) {
 }
 
 function ResponsFile(res, path) {
-    fs.readFile(__dirname + '/public' + path, 'utf-8', function (err, data) {
-        if (err) {
+    fs.readFile('public' + path, 'utf-8', function (error, data) {
+        if (error) {
             console.log('not found file:' + path);
             return ResponsNotFound(res);
         }
@@ -260,7 +242,7 @@ function ResponsCsv(req, res, path) {
     })
 
     stream.on('end', function () {
-        res.end();
+         res.end();
     });
 
     stream.on('error', function (error) {
@@ -302,6 +284,18 @@ function ResponsNotFound(res) {
     res.end();
 }
 
-app.listen(settings.port);
-console.log('Server running at http://localhost:' + settings.port + '/');
-
+function ClearUploadedFiles() {
+    var path = 'public/uploads';
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function (file, index) {
+            var curPath = path + "/" + file;
+            if (!fs.lstatSync(curPath).isDirectory()) {
+                fs.unlink(curPath, function (error) {
+                    if (error) {
+                        console.log("Caught error removing update files : ", error);
+                    }
+                });
+            }
+        });
+    }
+}
