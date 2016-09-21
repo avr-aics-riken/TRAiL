@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Statistic Page</h1>
-    <div class="button" style="margin:10px;">
+    <div class="main">
         <input type="button" class="button_page" id="button_graphic_page" value="Graphic Page" />
         <input type="button" class="button_page" id="button_reset_time" value="Reset Time" />
         <input type="button" class="button_page" id="button_reset_view" value="Reset View" />
@@ -28,29 +28,29 @@
             </label>&nbsp;
             <input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
         </form>
+        <div id="controller" class="controller"></div>
+        <table border="5" width="100%" cellspacing=0>
+            <tr>
+                <td rowspan=3 width="1000px" height="700px">
+                    <div id="graph_box"></div>
+                </td>
+                <td width="350px" height="110px">
+                    <p>Property</p>
+                    <div id="property"></div>
+                </td>
+            </tr>
+            <tr>
+                <td width="350px" height="300px">
+                    <div id="histogram"></div>
+                </td>
+            </tr>
+            <tr>
+                <td width="350px" height="300px">
+                    <div id="graph_bar"></div>
+                </td>
+            </tr>
+        </table>
     </div>
-    <div id="controller"></div>
-    <table border="5" width="100%" cellspacing=0>
-        <tr>
-            <td rowspan=3 width="1000px" height="700px">
-                <div id="graph_box"></div>
-            </td>
-            <td width="350px" height="110px">
-                <p>Property</p>
-                <div id="property"></div>
-            </td>
-        </tr>
-        <tr>
-            <td width="350px" height="300px">
-                <div id="histogram"></div>
-            </td>
-        </tr>
-        <tr>
-            <td width="350px" height="300px">
-                <div id="graph_bar"></div>
-            </td>
-        </tr>
-    </table>
     <script>
         GetCSVFile("input.csv", PlotPageStatistic);
     </script>

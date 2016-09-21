@@ -1,5 +1,5 @@
 BarController = function (events, share) {
-    var WIDTH = 1400;
+    var WIDTH = 1000;
     var HEIGHT = 100;
     var PADDING = 20;
 

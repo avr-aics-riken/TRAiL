@@ -4,7 +4,8 @@ function GetCSVFile(path, CallBack, data) {
         CreateArray(xhr.responseText);
     };
 
-    xhr.open("get", path, true);
+    // Be sure to get for IE
+    xhr.open("post", path, true);
     xhr.send(null);
 
     function CreateArray(csvData) {

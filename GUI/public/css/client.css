@@ -15,17 +15,14 @@ textarea:focus {
     border: 1px solid #1abc9c;
 }
 
-#controller {
-    min-height: 105px;
-}
-
 div {
     //width: auto;
     //margin: auto;
     background-color: white;
 }
 
-div.dialog {
+.dialog {
+    float:right;
     background-color: black;
 }
 

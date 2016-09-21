@@ -57,7 +57,7 @@ app.post('/upload', function (req, res) {
 
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        if (typeof req.file === 'undefined' || typeof query.url_next === 'undefined') {
+        if (typeof req.file === 'undefined' || typeof query.url_next === 'undefined' || !req.file.originalname.match(/.csv/)) {
             res.redirect('/home.html');
         } else {
             req.session.path_csv = req.file.path;
@@ -77,7 +77,23 @@ app.get('/input.csv', function (req, res) {
     }
 });
 
+app.post('/input.csv', function (req, res) {
+    if (req.session.path_csv) {
+        ResponsCsv(req, res, req.session.path_csv);
+    } else {
+        ResponsCsv(req, res, __dirname + req.url);
+    }
+});
+
 app.get('/input_mpi.csv', function (req, res) {
+    if (req.session.path_csv) {
+        ResponsFile(res, req.session.path_csv.replace(".csv", "_mpi.csv"));
+    } else {
+        ResponsFile(res, __dirname + req.url);
+    }
+});
+
+app.post('/input_mpi.csv', function (req, res) {
     if (req.session.path_csv) {
         ResponsFile(res, req.session.path_csv.replace(".csv", "_mpi.csv"));
     } else {
@@ -182,7 +198,7 @@ function ResponsCsv(req, res, path) {
         range_limit[0] = Number(line_csv[1]) / RATE_TIME;
         range_limit[1] = Number(line_csv[2]) / RATE_TIME;
 
-        if (req.session.share && req.session.share.range_active) {
+        if (req.session.share && req.session.share.range_active && req.session.share.range_active.length >= 2) {
             range_active = req.session.share.range_active;
         } else {
             range_active = [range_limit[0], range_limit[1]];
