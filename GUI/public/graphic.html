@@ -18,7 +18,8 @@
 </head>
 <body>
     <h1>Graphic Page</h1>
-    <div class="button" style="margin:10px;">
+    <div class="main">
+        <input type="button" class="button_page" value="Home Page" onclick="window.location.href = '/home.html';" />
         <input type="button" class="button_page" id="button_statistic_page" value="Statistic Page" />
         <input type="button" class="button_page" id="button_reset_time" value="Reset Time" />
         <input type="button" class="button_page" id="button_reset_view" value="Reset View" />
@@ -29,44 +30,44 @@
             </label>&nbsp;
             <input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
         </form>
+        <div id="controller"></div>
+        <table border="5px" width="100%" cellspacing=0>
+            <tr>
+                <td rowspan=3 width="1000px" height="700px">
+                    <div id="graph_bar"></div>
+                    <div class="button" style="margin:5px;">
+                        <input type="button" class="button_graph_on" id="button_comm" value="Communication">
+                        <input type="button" class="button_graph_on" id="button_calc" value="Calculation">
+                        <input type="button" class="button_graph" id="button_hwpc0" value="BANDWIDTH">
+                        <input type="button" class="button_graph" id="button_hwpc1" value="FLOPS">
+                        <input type="button" class="button_graph" id="button_hwpc2" value="VECTOR">
+                        <input type="button" class="button_graph" id="button_hwpc3" value="CACHE">
+                    </div>
+                    <div id="graph_line0"></div>
+                    <div id="graph_line1"></div>
+                    <div id="graph_line2"></div>
+                    <div id="graph_line3"></div>
+                    <div id="graph_line4"></div>
+                    <div id="graph_line5"></div>
+                </td>
+                <td width="350px" height="130px">
+                    <p>Property</p>
+                    <div id="property"></div>
+                </td>
+            </tr>
+            <tr>
+                <td width="350px" height="300px">
+                    <div id="histogram"></div>
+                </td>
+            </tr>
+            <tr>
+                <td width="350px" height="100%">
+                    <p>Communication Matrix</p>
+                    <div id="matrix_comm"></div>
+                </td>
+            </tr>
+        </table>
     </div>
-    <div id="controller"></div>
-    <table border="5px" width="100%" cellspacing=0>
-        <tr>
-            <td rowspan=3 width="1000px" height="700px">
-                <div id="graph_bar"></div>
-                <div class="button" style="margin:5px;">
-                    <input type="button" class="button_graph_on" id="button_comm" value="Communication">
-                    <input type="button" class="button_graph_on" id="button_calc" value="Calculation">
-                    <input type="button" class="button_graph" id="button_hwpc0" value="BANDWIDTH">
-                    <input type="button" class="button_graph" id="button_hwpc1" value="FLOPS">
-                    <input type="button" class="button_graph" id="button_hwpc2" value="VECTOR">
-                    <input type="button" class="button_graph" id="button_hwpc3" value="CACHE">
-                </div>
-                <div id="graph_line0"></div>
-                <div id="graph_line1"></div>
-                <div id="graph_line2"></div>
-                <div id="graph_line3"></div>
-                <div id="graph_line4"></div>
-                <div id="graph_line5"></div>
-            </td>
-            <td width="350px" height="130px">
-                <p>Property</p>
-                <div id="property"></div>
-            </td>
-        </tr>
-        <tr>
-            <td width="350px" height="300px">
-                <div id="histogram"></div>
-            </td>
-        </tr>
-        <tr>
-            <td width="350px" height="100%">
-                <p>Communication Matrix</p>
-                <div id="matrix_comm"></div>
-            </td>
-        </tr>
-    </table>
     <script>
         GetCSVFile("input.csv", PlotPageGraphic);
     </script>

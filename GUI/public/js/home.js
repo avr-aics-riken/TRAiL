@@ -8,3 +8,9 @@ function InitPage()
         document.getElementById("path_csv").value = this.value;
     }
 }
+
+function ClearSelection() {
+    if (window.confirm("Do you want clear selection of CSV file?")) {
+        document.getElementById("form_clear").submit();
+    }
+}

@@ -26,6 +26,13 @@
                 <input type="submit" class="button_page" id="submit_graphic_page" value="Graphic Page" formaction="/upload?url_next=/graphic.html" />
             </p>
         </form>
+        <br>
+        <form method="post" id="form_clear" action="/clear">
+            <p>* If you want clear selection of CSV file, Click button below</p>
+            <p>
+                <input type="button" class="button_clear" value="Clear Selection" onClick="ClearSelection()" />
+            </p>
+        </form>
     </div>
 </body>
 </html>

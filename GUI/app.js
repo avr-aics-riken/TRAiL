@@ -60,6 +60,10 @@ app.post('/upload', function (req, res) {
         if (typeof req.file === 'undefined' || typeof query.url_next === 'undefined' || !req.file.originalname.match(/.csv/)) {
             res.redirect('/home.html');
         } else {
+            if (req.session.path_csv) {
+                ClearFile(req.session.path_csv);
+            }
+
             req.session.path_csv = req.file.path;
             req.session.share = new ShareData();
             req.session.share.file_name = req.file.originalname;
@@ -67,7 +71,14 @@ app.post('/upload', function (req, res) {
             res.redirect(query.url_next);
         }
     });
-})
+});
+
+app.post('/clear', function (req, res) {
+    if (req.session.path_csv) {
+        ClearFile(req.session.path_csv);
+    }
+    res.redirect('/home.html');
+});
 
 app.get('/input.csv', function (req, res) {
     if (req.session.path_csv) {
@@ -228,17 +239,21 @@ function ResponsNotFound(res) {
     res.end();
 }
 
+function ClearFile(path) {
+    fs.unlink(path, function (error) {
+        if (error) {
+            console.log("Caught error removing update files : ", error);
+        }
+    });
+}
+
 function ClearUploadedFiles() {
     var path = 'public/uploads';
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(function (file, index) {
             var curPath = path + "/" + file;
             if (!fs.lstatSync(curPath).isDirectory()) {
-                fs.unlink(curPath, function (error) {
-                    if (error) {
-                        console.log("Caught error removing update files : ", error);
-                    }
-                });
+                ClearFile(curPath);
             }
         });
     }

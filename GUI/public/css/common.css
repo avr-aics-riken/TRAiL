@@ -22,7 +22,7 @@ div.main {
     padding:10px;
 }
 
-div.controller {
+#controller {
     margin:10px;
     width:1350px;
     height:100px;
