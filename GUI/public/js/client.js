@@ -4,7 +4,8 @@ function GetCSVFile(path, CallBack, data) {
         CreateArray(xhr.responseText);
     };
 
-    xhr.open("get", path, true);
+    // Be sure to get for IE
+    xhr.open("post", path, true);
     xhr.send(null);
 
     function CreateArray(csvData) {
@@ -127,6 +128,7 @@ function GetDefaltCounter() {
 
 
 function SetDataBySession(share) {
+    share.file_name = session.file_name;
     if (session.range_active.length == 2) {
         share.range_active = session.range_active;
     }
@@ -210,6 +212,13 @@ function PostData(share, path) {
             }
         }
 
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", "share_str");
+        hiddenField.setAttribute("value", JSON.stringify(share));
+
+        form.appendChild(hiddenField);
+
         document.body.appendChild(form);
         form.submit();
     }
@@ -236,3 +245,13 @@ function GetData(share) {
     return data;
 }
 
+window.onload = function () {
+    InitPage();
+}
+
+function InitPage() {
+    document.getElementById("file_csv").onchange = function () {
+        document.getElementById("form_file").submit();
+    }
+    document.getElementById("path_csv").value = session.file_name;
+}

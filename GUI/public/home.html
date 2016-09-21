@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>TRAiL</title>
+    <script src="js/home.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/common.css" />
+    <link rel="stylesheet" type="text/css" href="css/home.css" />
+</head>
+<body>
+    <h1>TRAiL Home</h1>
+    <div class="main">
+        <form method="post" action="/upload" enctype="multipart/form-data">
+            <p>1. Select CSV File which you want to analize.</p>
+            <p>
+                <label for="file_csv" class="input_file">
+                    Select CSV...
+                    <input type="file" id="file_csv" name="file_csv" required style="display:none;" />
+                </label>&nbsp;
+                <input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
+            </p>
+            <br>
+            <p>2. Click Button which you want to view.</p>
+            <p>
+                <input type="submit" class="button_page" id="submit_statistic_page" value="Statistic Page" formaction="/upload?url_next=/statistic.html" />
+                <input type="submit" class="button_page" id="submit_graphic_page" value="Graphic Page" formaction="/upload?url_next=/graphic.html" />
+            </p>
+        </form>
+    </div>
+</body>
+</html>

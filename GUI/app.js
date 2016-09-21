@@ -3,10 +3,13 @@ var fs = require('fs');
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
+var multer = require('multer');
+var url = require('url');
 var settings = require('./settings');
-var server = http.createServer();
 
 var app = express();
+var server = http.createServer();
+var upload = multer({ dest: 'public/uploads/' });
 
 //セッション設定
 app.use(session({
@@ -14,92 +17,68 @@ app.use(session({
 }));
 app.use(bodyParser());
 
+
 //ルーティング設定
 app.get('/', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    ResponsFile(res, '/statistic.html');
+    res.redirect('/home.html');
 });
 
 app.post('/', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    SetSession(req);
-    ResponsFile(res, '/statistic.html');
+    res.redirect('/home.html');
 });
 
-app.get('/statistic.html', function (req, res) {
+app.get('/*.html', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.post('/statistic.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    SetSession(req);
-    ResponsFile(res, req.url);
-});
-
-app.get('/graphic.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    ResponsFile(res, req.url);
-});
-
-app.post('/graphic.html', function (req, res) {
+app.post('/*.html', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
     SetSession(req);
     ResponsFile(res, req.url);
 });
 
-app.get('/js/d3/d3.min.js', function (req, res) {
+app.get('/js/*.js', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/javascript', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.get('/js/client.js', function (req, res) {
+app.get('/css/*.css', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/css', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.get('/js/struct.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
+app.post('/upload', function (req, res) {
+    upload.single('file_csv')(req, res, function (err) {
+        if (err) {
+            res.redirect('/home.html');
+            return;
+        }
 
-app.get('/js/PageStatistic.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        if (typeof req.file === 'undefined' || typeof query.url_next === 'undefined' || !req.file.originalname.match(/.csv/)) {
+            res.redirect('/home.html');
+        } else {
+            req.session.path_csv = req.file.path;
+            req.session.share = new ShareData();
+            req.session.share.file_name = req.file.originalname;
 
-app.get('/js/PageGraphic.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/BarController.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/Histogram.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/BoxGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/BarGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/LineGraph.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/js/Matrix.js', function (req, res) {
-    ResponsFile(res, req.url);
-});
-
-app.get('/css/client.css', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/css' });
-    ResponsFile(res, req.url);
-});
+            res.redirect(query.url_next);
+        }
+    });
+})
 
 app.get('/input.csv', function (req, res) {
     if (req.session.path_csv) {
-        //console.log('csv file:' + req.session.path_csv);
+        ResponsCsv(req, res, req.session.path_csv);
+    } else {
+        ResponsCsv(req, res, __dirname + req.url);
+    }
+});
+
+app.post('/input.csv', function (req, res) {
+    if (req.session.path_csv) {
         ResponsCsv(req, res, req.session.path_csv);
     } else {
         ResponsCsv(req, res, __dirname + req.url);
@@ -114,93 +93,40 @@ app.get('/input_mpi.csv', function (req, res) {
     }
 });
 
+app.post('/input_mpi.csv', function (req, res) {
+    if (req.session.path_csv) {
+        ResponsFile(res, req.session.path_csv.replace(".csv", "_mpi.csv"));
+    } else {
+        ResponsFile(res, __dirname + req.url);
+    }
+});
+
 app.get('/session_data.js', function (req, res) {
-    var data = 'var session = new ShareData();\n';
-    if (req.session.range_active) {
-        data += 'session.range_active[0] = ' + req.session.range_active[0] + ';\n'
-        data += 'session.range_active[1] = ' + req.session.range_active[1] + ';\n'
+    var data = 'var session;\n';
+    if (!req.session.share) {
+        req.session.share = new ShareData();
     }
-    if (req.session.range_select) {
-        data += 'session.range_select[0] = ' + req.session.range_select[0] + ';\n'
-        data += 'session.range_select[1] = ' + req.session.range_select[1] + ';\n'
-    }
-    if (req.session.label_select) {
-        data += 'session.label_select = \"' + req.session.label_select + '\";\n'
-    }
-    if (req.session.time_select) {
-        data += 'session.time_select = ' + req.session.time_select + ';\n'
-    }
-    if (req.session.rank_select) {
-        data += 'session.rank_select = ' + req.session.rank_select + ';\n'
-    }
-    if (req.session.pane_comm) {
-        data += 'session.pane_comm = ' + req.session.pane_comm + ';\n'
-    }
-    if (req.session.pane_calc) {
-        data += 'session.pane_calc = ' + req.session.pane_calc + ';\n'
-    }
-    if (req.session.pane_hwpc0) {
-        data += 'session.pane_hwpc0 = ' + req.session.pane_hwpc0 + ';\n'
-    }
-    if (req.session.pane_hwpc1) {
-        data += 'session.pane_hwpc1 = ' + req.session.pane_hwpc1 + ';\n'
-    }
-    if (req.session.pane_hwpc2) {
-        data += 'session.pane_hwpc2 = ' + req.session.pane_hwpc2 + ';\n'
-    }
-    if (req.session.pane_hwpc3) {
-        data += 'session.pane_hwpc3 = ' + req.session.pane_hwpc3 + ';\n'
-    }
+
+    data += 'session = ' + JSON.stringify(req.session.share) + ';\n';
+
     res.write(data);
     res.end();
 });
 
+app.listen(settings.port);
+console.log('Server running at http://localhost:' + settings.port + '/');
+ClearUploadedFiles();
+
 function SetSession(req) {
-    if (req.body.path_csv && req.body.path_csv != req.session.path_csv) {
-        req.session.path_csv = req.body.path_csv;
-        req.session.range_limit = null;
-        req.session.range_select = null;
-        req.session.range_active = null;
-        req.session.label_select = null;
-        req.session.time_select = null;
-        req.session.rank_select = null;
-        req.session.pane_comm = true;
-        req.session.pane_calc = true;
-        req.session.pane_hwpc0 = false;
-        req.session.pane_hwpc1 = false;
-        req.session.pane_hwpc2 = false;
-        req.session.pane_hwpc3 = false;
+    if (req.body.share_str) {
+        req.session.share = JSON.parse(req.body.share_str);
     }
-    if (req.body.start_limit && req.body.end_limit) {
-        req.session.range_limit = [Number(req.body.start_limit), Number(req.body.end_limit)];
-    }
-    if (req.body.start_active && req.body.end_active) {
-        req.session.range_active = [Number(req.body.start_active), Number(req.body.end_active)];
-    }
-    if (req.body.start_select && req.body.end_select) {
-        req.session.range_select = [Number(req.body.start_select), Number(req.body.end_select)];
-    }
-    if (req.body.label_select) {
-        req.session.label_select = req.body.label_select;
-    }
-    if (req.body.time_select) {
-        req.session.time_select = req.body.time_select;
-    }
-    if (req.body.rank_select) {
-        req.session.rank_select = req.body.rank_select;
-    }
-    req.session.pane_comm = req.body.pane_comm;
-    req.session.pane_calc = req.body.pane_calc;
-    req.session.pane_hwpc0 = req.body.pane_hwpc0;
-    req.session.pane_hwpc1 = req.body.pane_hwpc1;
-    req.session.pane_hwpc2 = req.body.pane_hwpc2;
-    req.session.pane_hwpc3 = req.body.pane_hwpc3;
 }
 
 function ResponsFile(res, path) {
-    fs.readFile(__dirname + '/public' + path, 'utf-8', function (err, data) {
-        if (err) {
-            console.log('not found file:' + path);
+    fs.readFile('public' + path, 'utf-8', function (error, data) {
+        if (error) {
+            console.log('Not found file:' + path);
             return ResponsNotFound(res);
         }
         res.write(data);
@@ -260,7 +186,7 @@ function ResponsCsv(req, res, path) {
     })
 
     stream.on('end', function () {
-        res.end();
+         res.end();
     });
 
     stream.on('error', function (error) {
@@ -272,8 +198,8 @@ function ResponsCsv(req, res, path) {
         range_limit[0] = Number(line_csv[1]) / RATE_TIME;
         range_limit[1] = Number(line_csv[2]) / RATE_TIME;
 
-        if (req.session.range_active) {
-            range_active = req.session.range_active;
+        if (req.session.share && req.session.share.range_active && req.session.share.range_active.length >= 2) {
+            range_active = req.session.share.range_active;
         } else {
             range_active = [range_limit[0], range_limit[1]];
         }
@@ -302,6 +228,36 @@ function ResponsNotFound(res) {
     res.end();
 }
 
-app.listen(settings.port);
-console.log('Server running at http://localhost:' + settings.port + '/');
+function ClearUploadedFiles() {
+    var path = 'public/uploads';
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function (file, index) {
+            var curPath = path + "/" + file;
+            if (!fs.lstatSync(curPath).isDirectory()) {
+                fs.unlink(curPath, function (error) {
+                    if (error) {
+                        console.log("Caught error removing update files : ", error);
+                    }
+                });
+            }
+        });
+    }
+}
 
+ShareData = function () {
+    this.file_name = "";
+    this.num_rank = 0;
+    this.updater = null;
+    this.range_limit = new Array();
+    this.range_active = new Array();
+    this.range_select = new Array();
+    this.label_select = null;
+    this.time_select = null;
+    this.rank_select = null;
+    this.pane_comm = true;
+    this.pane_calc = true;
+    this.pane_hwpc0 = false;
+    this.pane_hwpc1 = false;
+    this.pane_hwpc2 = false;
+    this.pane_hwpc3 = false;
+}

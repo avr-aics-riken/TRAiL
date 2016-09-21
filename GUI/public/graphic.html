@@ -2,28 +2,33 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>Graphic Page</title>
-    <script src="/js/d3/d3.min.js"></script>
-    <script src="/js/struct.js"></script>
-    <script src="/js/client.js"></script>
-    <script src="/js/PageGraphic.js"></script>
-    <script src="/js/BarController.js"></script>
-    <script src="/js/Histogram.js"></script>
-    <script src="/js/BarGraph.js"></script>
-    <script src="/js/LineGraph.js"></script>
-    <script src="/js/Matrix.js"></script>
-    <script src="/session_data.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/client.css" />
+    <title>TRAiL</title>
+    <script src="js/d3/d3.min.js"></script>
+    <script src="session_data.js"></script>
+    <script src="js/struct.js"></script>
+    <script src="js/client.js"></script>
+    <script src="js/PageGraphic.js"></script>
+    <script src="js/BarController.js"></script>
+    <script src="js/Histogram.js"></script>
+    <script src="js/BarGraph.js"></script>
+    <script src="js/LineGraph.js"></script>
+    <script src="js/Matrix.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/common.css" />
+    <link rel="stylesheet" type="text/css" href="css/client.css" />
 </head>
 <body>
     <h1>Graphic Page</h1>
-    <form method="post" action="/graphic.html" style="float: right;">
-        <input type="text" name="path_csv" id="path_csv" placeholder="The path to CSV file" size="40" /><br>
-    </form>
     <div class="button" style="margin:10px;">
         <input type="button" class="button_page" id="button_statistic_page" value="Statistic Page" />
         <input type="button" class="button_page" id="button_reset_time" value="Reset Time" />
         <input type="button" class="button_page" id="button_reset_view" value="Reset View" />
+        <form id="form_file" method="post" action="/upload?url_next=/graphic.html" enctype="multipart/form-data" style="float:right">
+            <label for="file_csv" class="input_file">
+                Select CSV...
+                <input type="file" id="file_csv" name="file_csv" required style="display:none;" />
+            </label>&nbsp;
+            <input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
+        </form>
     </div>
     <div id="controller"></div>
     <table border="5px" width="100%" cellspacing=0>

@@ -36,4 +36,5 @@ Run bin/run_TRAiL.bat
 - express (https://github.com/expressjs/express)
 - express-session (https://github.com/expressjs/session)
 - body-parser (https://github.com/expressjs/body-parser)
+- multer (https://github.com/expressjs/multer)
 - D3.js (https://d3js.org/)
