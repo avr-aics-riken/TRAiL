@@ -76,7 +76,9 @@ app.post('/upload', function (req, res) {
 app.post('/clear', function (req, res) {
     if (req.session.path_csv) {
         ClearFile(req.session.path_csv);
+        req.session.path_csv = null;
     }
+    req.session.share = new ShareData();
     res.redirect('/home.html');
 });
 
@@ -240,11 +242,13 @@ function ResponsNotFound(res) {
 }
 
 function ClearFile(path) {
-    fs.unlink(path, function (error) {
-        if (error) {
-            console.log("Caught error removing update files : ", error);
-        }
-    });
+    if (fs.lstatSync(path).isFile()) {
+        fs.unlink(path, function (error) {
+            if (error) {
+                console.log("Caught error removing update files : ", error);
+            }
+        });
+    }
 }
 
 function ClearUploadedFiles() {
@@ -252,9 +256,7 @@ function ClearUploadedFiles() {
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(function (file, index) {
             var curPath = path + "/" + file;
-            if (!fs.lstatSync(curPath).isDirectory()) {
-                ClearFile(curPath);
-            }
+            ClearFile(curPath);
         });
     }
 }
