@@ -17,6 +17,7 @@ BarGraph = function (events, clots, share) {
     var elementId = "graph_bar";
 
     var range_y = [];
+    var limit_range_y = d3.extent(events, function (d) { return d.rank; });    limit_range_y[1]++;
     ResetRangeY();
 
     var measure = new Measure(elementId)
@@ -28,16 +29,16 @@ BarGraph = function (events, clots, share) {
             .range([0, width - PADDING * 2]);
 
         var yScale = d3.scaleLinear()
-            .domain([range_y[0], range_y[1]])
-            .range([0, height - PADDING * 2]);
+            .domain(range_y)
+            .range([height - PADDING * 2, 0]);
 
         var xScaleInv = d3.scaleLinear()
             .domain([0, width - PADDING * 2])
             .range(share.range_select);
 
         var yScaleInv = d3.scaleLinear()
-            .domain([0, height - PADDING * 2])
-            .range([range_y[0], range_y[1]]);
+            .domain([height - PADDING * 2, 0])
+            .range(range_y);
 
         var zoom = d3.zoom()
             .on("zoom", Zoom);
@@ -56,7 +57,11 @@ BarGraph = function (events, clots, share) {
         svg.append("text")
             .text("Rank")
             .attr("x", PADDING / 2)
-            .attr("y", (PADDING + size_font) / 2);
+            .attr("y", (PADDING + size_font) / 2)
+            .on("contextmenu", function (d, i) {
+                d3.event.preventDefault();
+                ClickRight(d, i);
+            });
 
         svg.append("text")
             .text("sec")
@@ -83,7 +88,7 @@ BarGraph = function (events, clots, share) {
             .attr("fill", "white")
             .attr("opacity", 0);
 
-        var height_bar = (height - PADDING * 2) / (range_y[1] - range_y[0]);
+        var height_bar = (height - PADDING * 2) / Math.abs(range_y[1] - range_y[0]);
 
         // Draw bar
         graph.append("g")
@@ -100,7 +105,7 @@ BarGraph = function (events, clots, share) {
                 return xScale(d.time[0]);
             })
             .attr("y", function (d) {
-                return yScale(d.rank);
+                return yScale(d.rank) - height_bar;
             })
             .attr("width", function (d) {
                 return xScale(d.time[1]) - xScale(d.time[0]);
@@ -165,7 +170,7 @@ BarGraph = function (events, clots, share) {
 
         // Y 軸の定義
         var yAxis = d3.axisLeft(yScale)
-            .ticks(Math.min(range_y[1] - range_y[0], (height - PADDING * 2) / 40));
+            .ticks(Math.min(Math.abs(range_y[1] - range_y[0]), (height - PADDING * 2) / 40));
 
         // X 軸の生成
         svg.append("g")
@@ -178,8 +183,6 @@ BarGraph = function (events, clots, share) {
             .attr("class", "axis")
             .attr("transform", "translate(" + PADDING + "," + PADDING + ")")
             .call(yAxis);
-
-        measure.svg = svg;
 
         function Zoom() {
             if (d3.event.sourceEvent.type == "wheel") {
@@ -197,6 +200,7 @@ BarGraph = function (events, clots, share) {
             if (d3.event.sourceEvent.type == "mousedown" && d3.event.sourceEvent.button == 0) {
                 d3.event.sourceEvent.stopPropagation();
                 mousePosStart = d3.mouse(document.getElementById(elementId));
+                measure.SVG(svg);
                 measure.Show(true, width, height);
             }
         }
@@ -211,8 +215,8 @@ BarGraph = function (events, clots, share) {
                 var mousePos = d3.mouse(document.getElementById(elementId));
                 if (Math.abs(mousePosStart[0] - mousePos[0]) + Math.abs(mousePosStart[1] - mousePos[1]) < 1) return;
                 if (Math.abs(mousePosStart[0] - mousePos[0]) < Math.abs(mousePosStart[1] - mousePos[1])) {
-                    range_y[0] = yScaleInv(Math.min(mousePosStart[1], mousePos[1]) - PADDING);
-                    range_y[1] = yScaleInv(Math.max(mousePosStart[1], mousePos[1]) - PADDING);
+                    range_y[0] = yScaleInv(Math.max(mousePosStart[1], mousePos[1]) - PADDING);
+                    range_y[1] = yScaleInv(Math.min(mousePosStart[1], mousePos[1]) - PADDING);
                     Update();
                 } else {
                     share.range_active[0] = xScaleInv(Math.min(mousePosStart[0], mousePos[0]) - PADDING);
@@ -277,8 +281,12 @@ BarGraph = function (events, clots, share) {
         share.updater.Run();
     }
 
+    function ClickRight(d, i) {
+        var dialog = new GraphEdit(range_y, limit_range_y, Update);
+        dialog.Show();
+    }
+
     function ResetRangeY() {
-        range_y[0] = d3.min(events, function (d) { return d.rank; });
-        range_y[1] = d3.max(events, function (d) { return d.rank; }) + 1;
+        range_y = [limit_range_y[0], limit_range_y[1]];
     }
 }

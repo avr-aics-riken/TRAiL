@@ -25,6 +25,9 @@ LineGraph = function (events, type_graph, share) {
 
     var clots = [];
     var range_y = [];
+    var limit_range_y = [];
+    limit_range_y[0] = d3.min(lines, function (l) { return d3.min(l, function (p) { return p.value; }) });
+    limit_range_y[1] = d3.max(lines, function (l) { return d3.max(l, function (p) { return p.value; }) });
     ResetRangeY();
     var temp;
 
@@ -63,7 +66,11 @@ LineGraph = function (events, type_graph, share) {
         svg.append("text")
             .text(vertical_axis_label)
             .attr("x", PADDING / 2)
-            .attr("y", (PADDING + size_font) / 2);
+            .attr("y", (PADDING + size_font) / 2)
+            .on("contextmenu", function (d, i) {
+                d3.event.preventDefault();
+                ClickRight(d, i);
+            });
 
         svg.append("text")
             .text("sec")
@@ -273,9 +280,13 @@ LineGraph = function (events, type_graph, share) {
             .remove();
     }
 
+    function ClickRight(d, i) {
+        var dialog = new GraphEdit(range_y, limit_range_y, Update);
+        dialog.Show();
+    }
+
     function ResetRangeY() {
-        range_y[0] = d3.min(lines, function (l) { return d3.min(l, function (p) { return p.value; }) });
-        range_y[1] = d3.max(lines, function (l) { return d3.max(l, function (p) { return p.value; }) });
+        range_y = [limit_range_y[0], limit_range_y[1]];
     }
 }
 
