@@ -5,7 +5,6 @@
 
     // ダイアログを表示
     this.Show = function () {
-
         dialog.append("div")
             .attr("id", "dialog_back");
 

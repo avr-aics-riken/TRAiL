@@ -348,14 +348,17 @@ Measure = function (graph_area) {
     var height = 0;
     var show = false;
     var measure;
+    var svg;
 
     this.Width = function (w) { width = w; };
     this.Height = function (h) { height = h; };
+    this.SVG = function (s) { svg = s; };
     this.Show = Show;
     this.Update = Update;
 
     var mousePosStart;
-    function Plot(svg) {
+    function Plot() {
+        if (svg == null) return;
         var mousePos = d3.mouse(document.getElementById(graph_area));
         if (Math.abs(mousePosStart[0] - mousePos[0]) + Math.abs(mousePosStart[1] - mousePos[1]) < 1) return;
         measure = svg.append("g");
@@ -382,7 +385,7 @@ Measure = function (graph_area) {
         }
     }
 
-    function Show(s, w, h) {
+    function Show(s, w, h, svg) {
         show = s;
         if (show && w != null && h != null) {
             mousePosStart = d3.mouse(document.getElementById(graph_area));
@@ -391,16 +394,16 @@ Measure = function (graph_area) {
         }
     }
 
-    function Update(svg) {
-        //Clear();
+    function Update() {
+        Clear();
         if (show) {
-            Plot(svg);
+            Plot();
         }
     }
 
     function Clear() {
         if (measure) {
-            measure.selectAll("g").remove();
+            measure.remove();
         }
     }
 }

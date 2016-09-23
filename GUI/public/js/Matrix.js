@@ -9,7 +9,7 @@ Matrix = function (csvArray, share) {
 
     var comms = [];
     for (var i = 0; i < csvArray.length; i++) {
-        if (csvArray[i][0] == "") continue;
+        if (csvArray[i][0] == "" || csvArray[i][0] == "Not found") continue;
         comms.push(new Communication(csvArray[i]))
     }
 

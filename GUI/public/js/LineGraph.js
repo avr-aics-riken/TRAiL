@@ -176,12 +176,13 @@ LineGraph = function (events, type_graph, share) {
             if (d3.event.sourceEvent.type == "mousedown" && d3.event.sourceEvent.button == 0) {
                 d3.event.sourceEvent.stopPropagation();
                 mousePosStart = d3.mouse(document.getElementById(elementId));
+                measure.SVG(svg);
                 measure.Show(true, width, height);
             }
         }
 
         function Drag() {
-            share.updater.Run();
+            measure.Update();
         }
 
         function DragEnd() {
@@ -192,7 +193,7 @@ LineGraph = function (events, type_graph, share) {
                 if (Math.abs(mousePosStart[0] - mousePos[0]) < Math.abs(mousePosStart[1] - mousePos[1])) {
                     range_y[0] = yScaleInv(Math.max(mousePosStart[1], mousePos[1]));
                     range_y[1] = yScaleInv(Math.min(mousePosStart[1], mousePos[1]));
-                    share.updater.Run();
+                    Update();
                 } else {
                     share.range_active[0] = xScaleInv(Math.min(mousePosStart[0], mousePos[0]) - PADDING);
                     share.range_active[1] = xScaleInv(Math.max(mousePosStart[0], mousePos[0]) - PADDING);

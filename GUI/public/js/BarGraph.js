@@ -179,7 +179,7 @@ BarGraph = function (events, clots, share) {
             .attr("transform", "translate(" + PADDING + "," + PADDING + ")")
             .call(yAxis);
 
-        measure.Update(svg);
+        measure.svg = svg;
 
         function Zoom() {
             if (d3.event.sourceEvent.type == "wheel") {
@@ -202,7 +202,7 @@ BarGraph = function (events, clots, share) {
         }
 
         function Drag() {
-            share.updater.Run();
+            measure.Update();
         }
 
         function DragEnd() {
@@ -213,7 +213,7 @@ BarGraph = function (events, clots, share) {
                 if (Math.abs(mousePosStart[0] - mousePos[0]) < Math.abs(mousePosStart[1] - mousePos[1])) {
                     range_y[0] = yScaleInv(Math.min(mousePosStart[1], mousePos[1]) - PADDING);
                     range_y[1] = yScaleInv(Math.max(mousePosStart[1], mousePos[1]) - PADDING);
-                    share.updater.Run();
+                    Update();
                 } else {
                     share.range_active[0] = xScaleInv(Math.min(mousePosStart[0], mousePos[0]) - PADDING);
                     share.range_active[1] = xScaleInv(Math.max(mousePosStart[0], mousePos[0]) - PADDING);
