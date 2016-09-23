@@ -44,16 +44,6 @@ function PlotPageGraphic(csvArray) {
         share.range_select = share.range_active = share.range_limit;
         PostData(share);
     }
-    document.getElementById("button_reset_view").onclick = function () {
-        graph_bar.Reset();
-        graph_comm.Reset();
-        graph_calc.Reset();
-        graph_hwpc0.Reset();
-        graph_hwpc1.Reset();
-        graph_hwpc2.Reset();
-        graph_hwpc3.Reset();
-        share.updater.Run();
-    }
 
     document.getElementById("button_comm").onclick = function () {
         if (g_counters[0].unuse) return;

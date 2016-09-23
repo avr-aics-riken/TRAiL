@@ -1,10 +1,7 @@
-﻿GraphEdit = function (range_y, limit_range_y, Update) {
-
+﻿Dialog = function () {
     var dialog = d3.select("#dialog");
-    var id_input = ["range_y1", "range_y0"];
 
-    // ダイアログを表示
-    this.Show = function () {
+    this.Generate = function () {
         dialog.append("div")
             .attr("id", "dialog_back");
 
@@ -15,6 +12,24 @@
             .append("text")
             .text("Graph Edit");
 
+        return dialog_body;
+    }
+
+    this.Clear = function () {
+        dialog.selectAll("div")
+            .remove();
+    }
+
+}
+
+GraphEdit = function (range_y, limit_range_y, Update) {
+    var dialog = new Dialog();
+    var id_input = ["range_y1", "range_y0"];
+    var inputs;
+
+    // ダイアログを表示
+    this.Show = function () {
+        var dialog_body = dialog.Generate();
 
         // create table
         var table = dialog_body.append("table")
@@ -24,7 +39,7 @@
         var thead = table.append("thead").append("tr");
 
         thead.selectAll("th")
-            .data(["", "Standard Deviation", "Limit Value"])
+            .data(["Standard Deviation", "Select Value", "Limit Value"])
             .enter()
             .append("th")
             .text(function (d) {
@@ -40,12 +55,11 @@
             .append("tr");
 
         trows.data(["Max", "Min"])
-            .append("td")
+            .append("th")
             .text(function (d) { return d });
 
-        trows.data(id_input)
+        inputs = trows.data(id_input)
             .append("td")
-            .attr("id", function (d) { return d + "_td"; })
             .append("input")
             .attr("type", "number")
             .attr("id", function (d) { return d; })
@@ -66,8 +80,6 @@
             .attr("class", "dialog")
             .on("click", OnReset);
 
-        p.append("text").text(" ")
-
         p.append("button")
             .text("OK")
             .attr("class", "dialog")
@@ -75,16 +87,7 @@
     }
 
     function OnReset() {
-        for (var i = 0; i < 2; i++) {
-            d3.select("#" + id_input[i])
-                .remove();
-
-            d3.select("#" + id_input[i] + "_td")
-                .append("input")
-                .attr("type", "number")
-                .attr("id", id_input[i])
-                .attr("value", limit_range_y[1 - i]);
-        }
+        inputs.property("value", function (d, i) { return limit_range_y[1 - i]; });
     }
 
     // ダイアログを閉じる
@@ -94,7 +97,6 @@
         range_y[1] = Math.max(temp[0], temp[1]);
         Update();
 
-        dialog.selectAll("div")
-            .remove();
+        dialog.Clear();
     }
 }

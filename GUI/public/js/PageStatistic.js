@@ -23,10 +23,6 @@ function PlotPageStatistic(csvArray) {
         share.range_select = share.range_active = share.range_limit;
         PostData(share);
     }
-    document.getElementById("button_reset_view").onclick = function () {
-        graph_box.Reset();
-        share.updater.Run();
-    }
     PlotSubView();
 
     function PlotSubView() {
