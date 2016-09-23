@@ -167,26 +167,26 @@ function ResponsCsv(req, res, path) {
         for (var i = 0; i < lines.length - 1; i++) {
             var line_csv = lines[i].split(",");
 
-            if (lines[i].search(/<head>/) != -1) {
+            if (lines[i].search(/<head>/) !== -1) {
                 state = 1;
                 res.write(lines[i] + '\n');
                 continue;
-            } else if (lines[i].search(/<Event>/) != -1) {
+            } else if (lines[i].search(/<Event>/) !== -1) {
                 state = 3;
                 res.write(lines[i] + '\n');
                 continue;
             }
 
-            if (state == 1) {
+            if (state === 1) {
                 if (line_csv.length >= 3) {
                     res.write(lines[i] + '\n');
                     num_rank = Number(line_csv[0]);
                     SetRange(line_csv);
                 }
                 state = 2;
-            } else if (state == 2) {
+            } else if (state === 2) {
                 res.write(lines[i] + '\n');
-            } else if (state == 3) {
+            } else if (state === 3) {
                 if (IsVisible(line_csv)) {
                     res.write(lines[i] + '\n');
                 }
@@ -218,7 +218,7 @@ function ResponsCsv(req, res, path) {
 
     function IsVisible(line_csv) {
         var visible;
-        if (num_rank == null || range_limit.length < 2 || range_active == null) {
+        if (num_rank === null || range_limit.length < 2 || range_active === null) {
             console.log('CSV format error');
             return true;
         }

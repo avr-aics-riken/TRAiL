@@ -30,6 +30,7 @@ BoxGraph = function (clots, events, share) {
     });
 
     var range_y = d3.extent(boxes, function (d) { return d.value; });
+    var limit_range_y = d3.extent(boxes, function (d) { return d.value; });
     ResetRangeY();
     var measure = new Measure(elementId)
 
@@ -68,7 +69,11 @@ BoxGraph = function (clots, events, share) {
         svg.append("text")
             .text("Standard Deviation")
             .attr("x", PADDING / 2)
-            .attr("y", (PADDING + size_font) / 2);
+            .attr("y", (PADDING + size_font) / 2)
+            .on("contextmenu", function (d, i) {
+                d3.event.preventDefault();
+                ClickRight(d, i);
+            });
 
         svg.append("text")
             .text("sec")
@@ -298,7 +303,12 @@ BoxGraph = function (clots, events, share) {
         histogram.Show(true, 350, 300);
     }
 
+    function ClickRight(d, i) {
+        var dialog = new GraphEdit(range_y, limit_range_y, Update);
+        dialog.Show();
+    }
+
     function ResetRangeY() {
-        range_y = d3.extent(boxes, function (d) { return d.value; });
+        range_y = [limit_range_y[0], limit_range_y[1]];
     }
 };
