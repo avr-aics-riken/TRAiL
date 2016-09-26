@@ -73,7 +73,9 @@ BoxGraph = function (clots, events, share) {
             .on("contextmenu", function (d, i) {
                 d3.event.preventDefault();
                 ClickRight(d, i);
-            });
+            })
+            .append("svg:title")
+            .text("To show Edit Dialog, right-click on this.");
 
         svg.append("text")
             .text("sec")

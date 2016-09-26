@@ -122,7 +122,9 @@ BarController = function (events, share) {
                 return 1.0;
             })
             .style('cursor', 'col-resize')
-            .call(drag);
+            .call(drag)
+            .append("svg:title")
+            .text("To show Edit Dialog, right-click on this.");
 
         function DragStarted(d) {
             d3.event.sourceEvent.stopPropagation();
