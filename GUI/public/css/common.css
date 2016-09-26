@@ -1,11 +1,3 @@
-h1 {
-    margin: 10px;
-    padding: .3em .70em;
-    background-color: #f6f6f6;
-    font-size: 30px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
-}
-
 body {
     width: 1400px;
     margin: 5px auto;
@@ -14,18 +6,28 @@ body {
     color: black;
 }
 
+h1 {
+    margin: 10px;
+    padding: .3em .70em;
+    background-color: #f6f6f6;
+    font-size: 30px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+}
+
 div {
+    margin: 8px;
+    background-color: white;
+}
+
+p {
+    margin: 0px;
+    font-family: arial;
+    font-size: 18px;
     background-color: white;
 }
 
 div.main {
-    padding:10px;
-}
-
-#controller {
-    margin:10px;
-    width:1350px;
-    height:100px;
+    margin:16px;
 }
 
 input.button_page {
@@ -70,35 +72,4 @@ label.input_file {
 
 input.path_file {
     width: 240px;
-}
-
-#dialog_back {
-    position: fixed;
-    top:0px;
-    left:0px;
-    width:100%;
-    min-height:100%;
-    background-color: black;
-    opacity: 0.5;
-}
-
-#dialog_body {
-    position: fixed;
-    border-radius: 6px 6px 6px 6px;
-    left:480px;
-    top:400px;
-    background-color: white;
-    box-shadow: 6px 6px 6px rgba(0,0,0,0.4);  /* CSS3 */
-    padding:40px;
-}
-
-table.dialog {
-    margin: 10px;
-}
-
-button.dialog {
-    width:60px;
-    font-size: 14px;
-    padding: 2px 4px 2px 4px;
-    margin: 0px 4px 0px 4px;
 }

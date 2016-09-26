@@ -190,57 +190,19 @@ function TrimRange(share) {
 }
 
 function PostData(share, path) {
-    var data = GetData(share);
-    post(path, data);
+    path = path || "";
 
-    function post(path, params, method) {
-        path = path || "";
-        method = method || "post"; // Set method to post by default if not specified.
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", path);
 
-        var form = document.createElement("form");
-        form.setAttribute("method", method);
-        form.setAttribute("action", path);
+    var hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "share_str");
+    hiddenField.setAttribute("value", JSON.stringify(share));
 
-        for (var key in params) {
-            if (params.hasOwnProperty(key)) {
-                var hiddenField = document.createElement("input");
-                hiddenField.setAttribute("type", "hidden");
-                hiddenField.setAttribute("name", key);
-                hiddenField.setAttribute("value", params[key]);
+    form.appendChild(hiddenField);
 
-                form.appendChild(hiddenField);
-            }
-        }
-
-        var hiddenField = document.createElement("input");
-        hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", "share_str");
-        hiddenField.setAttribute("value", JSON.stringify(share));
-
-        form.appendChild(hiddenField);
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-function GetData(share) {
-    var data = {
-        start_limit: share.range_limit[0],
-        end_limit: share.range_limit[1],
-        start_active: share.range_active[0],
-        end_active: share.range_active[1],
-        start_select: share.range_select[0],
-        end_select: share.range_select[1],
-        label_select: share.label_select,
-        time_select: share.time_select,
-        rank_select: share.rank_select,
-        pane_comm: share.pane_comm,
-        pane_calc: share.pane_calc,
-        pane_hwpc0: share.pane_hwpc0,
-        pane_hwpc1: share.pane_hwpc1,
-        pane_hwpc2: share.pane_hwpc2,
-        pane_hwpc3: share.pane_hwpc3
-    };
-    return data;
+    document.body.appendChild(form);
+    form.submit();
 }
