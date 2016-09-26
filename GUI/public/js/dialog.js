@@ -205,13 +205,10 @@ TimeEdit = function (share) {
     function OnOK() {
         // Set value from dialog
         var valueList = GetValueList();
-        for (var i = 0; i < 4; i++) {
-            if (i < 2) {
-                range_select[i] = valueList[i];
-            } else {
-                range_active[i % 2] = valueList[i];
-            }
-        }
+        range_select[0] = Math.min(valueList[0], valueList[1]);
+        range_select[1] = Math.max(valueList[0], valueList[1]);
+        range_active[0] = Math.min(valueList[2], valueList[3]);
+        range_active[1] = Math.max(valueList[2], valueList[3]);
 
         PostData(share);
     }

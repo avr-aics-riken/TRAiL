@@ -275,10 +275,5 @@ ShareData = function () {
     this.label_select = null;
     this.time_select = null;
     this.rank_select = null;
-    this.pane_comm = true;
-    this.pane_calc = true;
-    this.pane_hwpc0 = false;
-    this.pane_hwpc1 = false;
-    this.pane_hwpc2 = false;
-    this.pane_hwpc3 = false;
+    this.show_line = [true, true, true, true, true, true];
 }

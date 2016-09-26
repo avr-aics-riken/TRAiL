@@ -14,79 +14,47 @@ function PlotPageGraphic(csvArray) {
 
     var controller = new BarController(events, share);
     var graph_bar = new BarGraph(events, clots, share);
-    var graph_comm = new LineGraph(events, 0, share);
-    var graph_calc = new LineGraph(events, 1, share);
-    var graph_hwpc0 = new LineGraph(events, 2, share);
-    var graph_hwpc1 = new LineGraph(events, 3, share);
-    var graph_hwpc2 = new LineGraph(events, 4, share);
-    var graph_hwpc3 = new LineGraph(events, 5, share);
 
     controller.Plot();
     graph_bar.Show(true, 1000, 300);
-    graph_comm.Show(share.pane_comm, 1000, 200);
-    graph_calc.Show(share.pane_calc, 1000, 200);
-    graph_hwpc0.Show(share.pane_hwpc0, 1000, 200);
-    graph_hwpc1.Show(share.pane_hwpc1, 1000, 200);
-    graph_hwpc2.Show(share.pane_hwpc2, 1000, 200);
-    graph_hwpc3.Show(share.pane_hwpc3, 1000, 200);
-    GetCSVFile("input_mpi.csv", PlotMatrix, share);
 
-    // ボタンにイベントのON/OFFを反映
-    document.getElementById("button_comm").className = g_counters[0].unuse ? 'button_graph_gray' : share.pane_comm ? 'button_graph_on' : 'button_graph';
-    document.getElementById("button_calc").className = g_counters[1].unuse ? 'button_graph_gray' : share.pane_calc ? 'button_graph_on' : 'button_graph';
-    document.getElementById("button_hwpc0").className = g_counters[2].unuse ? 'button_graph_gray' : share.pane_hwpc0 ? 'button_graph_on' : 'button_graph';
-    document.getElementById("button_hwpc1").className = g_counters[3].unuse ? 'button_graph_gray' : share.pane_hwpc1 ? 'button_graph_on' : 'button_graph';
-    document.getElementById("button_hwpc2").className = g_counters[4].unuse ? 'button_graph_gray' : share.pane_hwpc2 ? 'button_graph_on' : 'button_graph';
-    document.getElementById("button_hwpc3").className = g_counters[5].unuse ? 'button_graph_gray' : share.pane_hwpc3 ? 'button_graph_on' : 'button_graph';
+    const NUM_GRAPH_LINE = 6;
+    var graph_line = new Array();
+    for (var i = 0; i < NUM_GRAPH_LINE; i++) {
+        graph_line.push(new LineGraph(events, i, share));
+        if (g_counters[i].unuse) {
+            share.show_line[i] = false;
+        }
+        graph_line[i].Show(share.show_line[i], 1000, 200);
+    }
+
+    var id_buttom = ["button_comm", "button_calc", "button_hwpc0", "button_hwpc1", "button_hwpc2", "button_hwpc3"];
+    for (var i = 0; i < NUM_GRAPH_LINE; i++) {
+        // ボタンにイベントのON/OFFを反映
+        document.getElementById(id_buttom[i]).className = g_counters[i].unuse ? 'button_graph_gray' : share.pane_comm ? 'button_graph_on' : 'button_graph';
+
+        // ボタンにイベントを割り当て
+        d3.select("#" + id_buttom[i])
+            .data([i])
+            .on("click", OnButton);
+
+        function OnButton(i) {
+            if (g_counters[i].unuse) return;
+            share.show_line[i] = !share.show_line[i];
+            this.className = share.show_line[i] ? 'button_graph_on' : 'button_graph';
+            graph_line[i].Show(share.show_line[i]);
+        }
+    }
 
     // ボタンにイベントを割り当て
     document.getElementById("button_statistic_page").onclick = function () {
         PostData(share, "/statistic.html");
     }
 
-    document.getElementById("button_comm").onclick = function () {
-        if (g_counters[0].unuse) return;
-        share.pane_comm = !share.pane_comm;
-        this.className = share.pane_comm ? 'button_graph_on' : 'button_graph';
-        graph_comm.Show(share.pane_comm);
-    }
-
-    document.getElementById("button_calc").onclick = function () {
-        if (g_counters[1].unuse) return;
-        share.pane_calc = !share.pane_calc;
-        this.className = share.pane_calc ? 'button_graph_on' : 'button_graph';
-        graph_calc.Show(share.pane_calc);
-    }
-
-    document.getElementById("button_hwpc0").onclick = function () {
-        if (g_counters[2].unuse) return;
-        share.pane_hwpc0 = !share.pane_hwpc0;
-        this.className = share.pane_hwpc0 ? 'button_graph_on' : 'button_graph';
-        graph_hwpc0.Show(share.pane_hwpc0);
-    }
-
-    document.getElementById("button_hwpc1").onclick = function () {
-        if (g_counters[3].unuse) return;
-        share.pane_hwpc1 = !share.pane_hwpc1;
-        this.className = share.pane_hwpc1 ? 'button_graph_on' : 'button_graph';
-        graph_hwpc1.Show(share.pane_hwpc1);
-    }
-
-    document.getElementById("button_hwpc2").onclick = function () {
-        if (g_counters[4].unuse) return;
-        share.pane_hwpc2 = !share.pane_hwpc2;
-        this.className = share.pane_hwpc2 ? 'button_graph_on' : 'button_graph';
-        graph_hwpc2.Show(share.pane_hwpc2);
-    }
-
-    document.getElementById("button_hwpc3").onclick = function () {
-        if (g_counters[5].unuse) return;
-        share.pane_hwpc3 = !share.pane_hwpc3;
-        this.className = share.pane_hwpc3 ? 'button_graph_on' : 'button_graph';
-        graph_hwpc3.Show(share.pane_hwpc3);
-    }
 
     PlotSubView();
+
+    GetCSVFile("input_mpi.csv", PlotMatrix, share);
 
     function PlotMatrix(csvArray, share) {
         var matrix_comm = new Matrix(csvArray, share);
