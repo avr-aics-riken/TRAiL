@@ -13,6 +13,7 @@ BarController = function (events, share) {
 
     var num_rank = d3.max(events, function (d) { return d.rank; }) + 1;
 
+    // スケール関数の生成
     var xScale = d3.scaleLinear()
         .domain(range_limit)
         .range([PADDING, WIDTH - PADDING]);
@@ -27,13 +28,16 @@ BarController = function (events, share) {
         var svg = d3.select("#controller")
             .append("svg")
             .attr("width", WIDTH)
-            .attr("height", HEIGHT);
+            .attr("height", HEIGHT)
+            .on("contextmenu", function (d, i) {
+                d3.event.preventDefault();
+                ClickRight(d, i);
+            });
 
         PlotBar(svg);
         PlotController(svg);
     }
 
-    // スケール関数の生成
     function PlotBar(svg) {
         // Make back screen to get event
         svg.append("rect")
@@ -341,6 +345,11 @@ BarController = function (events, share) {
             stroke_width: 0
         },
     ];
+
+    function ClickRight(d, i) {
+        var dialog = new TimeEdit(share);
+        dialog.Show();
+    }
 }
 
 Measure = function (graph_area) {

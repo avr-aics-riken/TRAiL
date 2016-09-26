@@ -19,10 +19,6 @@ function PlotPageStatistic(csvArray) {
     document.getElementById("button_graphic_page").onclick = function () {
         PostData(share, "/graphic.html");
     }
-    document.getElementById("button_reset_time").onclick = function () {
-        share.range_select = share.range_active = share.range_limit;
-        PostData(share);
-    }
     PlotSubView();
 
     function PlotSubView() {

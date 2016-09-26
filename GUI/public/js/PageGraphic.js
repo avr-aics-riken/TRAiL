@@ -40,10 +40,6 @@ function PlotPageGraphic(csvArray) {
     document.getElementById("button_statistic_page").onclick = function () {
         PostData(share, "/statistic.html");
     }
-    document.getElementById("button_reset_time").onclick = function () {
-        share.range_select = share.range_active = share.range_limit;
-        PostData(share);
-    }
 
     document.getElementById("button_comm").onclick = function () {
         if (g_counters[0].unuse) return;
