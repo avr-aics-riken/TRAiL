@@ -84,7 +84,7 @@ function GetEvents(csvArray) {
         }
 
         if (state == 1) {
-            continue;
+            SetFileSummary(Number(csv[2]) - Number(csv[1]), Number(csv[3]), Number(csv[0]))
         } else if (state == 2) {
             var id = Number(csv[2]);
             if (g_counters[id] == null) {
@@ -205,4 +205,31 @@ function PostData(share, path) {
 
     document.body.appendChild(form);
     form.submit();
+}
+
+function SetFileSummary(time, num_event, num_rank)
+{
+    var div = d3.select("#file_summary");
+    div.append("p")
+        .text("File Summary");
+
+    // Create table
+    var table = div.append("table").attr("border", "1");
+    var trows = table
+        .selectAll("tr")
+        .data([null, null, null])
+        .enter()
+        .append("tr");
+
+    trows.data(["Total Time", "Number of Section", "Number of Rank"])
+        .append("th")
+        .style("text-align", "right")
+        .text(function (d) { return d });
+
+    var RATE_TIME = 20000000
+    inputs = trows.data([time / RATE_TIME, num_event, num_rank])
+        .append("td")
+        .text(function (d) {
+            return d;
+        });
 }

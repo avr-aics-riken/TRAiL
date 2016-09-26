@@ -226,6 +226,8 @@ class WatchVec
 	bool m_bStart_label_defCoun;
 	bool m_bStart_label_event;
 
+	uint64_t m_event_count; 
+
 	uint64_t m_global_start_time; 
 	uint64_t m_global_end_time; 
 

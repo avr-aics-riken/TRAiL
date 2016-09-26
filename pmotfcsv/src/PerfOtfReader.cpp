@@ -217,7 +217,7 @@ PerfOtfReader::PerfOtfReader():m_fp_csv_wk(NULL),
 								m_global_start_time(ULLONG_MAX), 
 								m_global_end_time(0)
 {
-
+	m_event_count = 0;
 }
 
 /// デストラクタ.
@@ -339,7 +339,7 @@ rank_sum=ランク数, start_time=開始時間, end_time=終了時間
 	//ファイルポインタを先頭に移動して、先頭に書き込む
 
 	fprintf(m_fp_csv_head, "<head>\n");
-	int rc = fprintf(m_fp_csv_head, "%u,%lu,%lu\n",process_sum,starttime,endtime);
+	int rc = fprintf(m_fp_csv_head, "%u,%lu,%lu,%lu\n", process_sum, starttime, endtime, m_event_count);
     if (rc == -1)
     {
 		assert(false);
@@ -409,7 +409,7 @@ void PerfOtfReader::_handleEnter (const uint64_t& time,
 				  const uint32_t& source, 
 				  OTF_KeyValueList *list)
 {
-
+	m_event_count ++;
 	debug_printf("_handleEnter time=%lu,function=%d,process=%d\n",time,function,process);
 
 	//「ラベルＩＤ、ランク番号、時間、種別:Enter（=1） or Leave(=2)、Flop値or通信量(Enter時は0, Leave時のみ有効な値)」のＣＳＶ行です。
