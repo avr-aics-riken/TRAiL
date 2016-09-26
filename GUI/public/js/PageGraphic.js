@@ -1,4 +1,7 @@
 var PlotPage = 1; // 0 : PageStatistic, 1 : PageGraphic
+function InitPage() {
+    SetPathCSV();
+}
 
 function PlotPageGraphic(csvArray) {
     var events = GetEvents(csvArray);

@@ -244,14 +244,3 @@ function GetData(share) {
     };
     return data;
 }
-
-window.onload = function () {
-    InitPage();
-}
-
-function InitPage() {
-    document.getElementById("file_csv").onchange = function () {
-        document.getElementById("form_file").submit();
-    }
-    document.getElementById("path_csv").value = session.file_name;
-}

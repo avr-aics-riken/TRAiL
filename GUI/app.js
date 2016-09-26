@@ -19,56 +19,69 @@ app.use(bodyParser());
 
 
 //ルーティング設定
-app.get('/', function (req, res) {
+app.all('/', function (req, res) {
     res.redirect('/home.html');
 });
 
-app.post('/', function (req, res) {
-    res.redirect('/home.html');
+app.all('/home.html', function (req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
+    ResponsFile(res, req.url);
 });
 
 app.get('/*.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    ResponsFile(res, req.url);
+    if (HasCSV(req.session)) {
+        res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
+        ResponsFile(res, req.url);
+    } else {
+        res.redirect('/home.html');
+    }
 });
 
 app.post('/*.html', function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
-    SetSession(req);
-    ResponsFile(res, req.url);
+    if (HasCSV(req.session)) {
+        res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
+        SetSession(req);
+        ResponsFile(res, req.url);
+    } else {
+        res.redirect('/home.html');
+    }
 });
 
-app.get('/js/*.js', function (req, res) {
+app.all('/js/*.js', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/javascript', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
-app.get('/css/*.css', function (req, res) {
+app.all('/css/*.css', function (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/css', charaset: 'UTF-8' });
     ResponsFile(res, req.url);
 });
 
 app.post('/upload', function (req, res) {
     upload.single('file_csv')(req, res, function (err) {
-        if (err) {
-            res.redirect('/home.html');
-            return;
-        }
-
-        var url_parts = url.parse(req.url, true);
-        var query = url_parts.query;
-        if (typeof req.file === 'undefined' || typeof query.url_next === 'undefined' || !req.file.originalname.match(/.csv/)) {
-            res.redirect('/home.html');
-        } else {
-            if (req.session.path_csv) {
-                ClearFile(req.session.path_csv);
+        if (!err && req.file) {
+            if (!req.file.originalname.match(/.csv/)) {
+                res.redirect('/home.html');
+                return;
             }
 
+            if (HasCSV(req.session)) {
+                ClearFile(req.session.path_csv);
+            }
             req.session.path_csv = req.file.path;
             req.session.share = new ShareData();
             req.session.share.file_name = req.file.originalname;
+        }
 
-            res.redirect(query.url_next);
+        if (HasCSV(req.session)) {
+            var url_parts = url.parse(req.url, true);
+            var query = url_parts.query;
+            if (typeof query.url_next !== 'undefined') {
+                res.redirect(query.url_next);
+                return;
+            }
+        } else {
+            res.redirect('/home.html');
         }
     });
 });
@@ -82,7 +95,7 @@ app.post('/clear', function (req, res) {
     res.redirect('/home.html');
 });
 
-app.get('/input.csv', function (req, res) {
+app.all('/input.csv', function (req, res) {
     if (req.session.path_csv) {
         ResponsCsv(req, res, req.session.path_csv);
     } else {
@@ -90,15 +103,7 @@ app.get('/input.csv', function (req, res) {
     }
 });
 
-app.post('/input.csv', function (req, res) {
-    if (req.session.path_csv) {
-        ResponsCsv(req, res, req.session.path_csv);
-    } else {
-        ResponsCsv(req, res, __dirname + req.url);
-    }
-});
-
-app.get('/input_mpi.csv', function (req, res) {
+app.all('/input_mpi.csv', function (req, res) {
     if (req.session.path_csv) {
         ResponsFile(res, req.session.path_csv.replace(".csv", "_mpi.csv"));
     } else {
@@ -106,15 +111,7 @@ app.get('/input_mpi.csv', function (req, res) {
     }
 });
 
-app.post('/input_mpi.csv', function (req, res) {
-    if (req.session.path_csv) {
-        ResponsFile(res, req.session.path_csv.replace(".csv", "_mpi.csv"));
-    } else {
-        ResponsFile(res, __dirname + req.url);
-    }
-});
-
-app.get('/session_data.js', function (req, res) {
+app.all('/session_data.js', function (req, res) {
     var data = 'var session;\n';
     if (!req.session.share) {
         req.session.share = new ShareData();
@@ -239,6 +236,13 @@ function ResponsNotFound(res) {
     res.writeHead(404, { 'content-Type': 'text/plain' });
     res.write("Not found");
     res.end();
+}
+
+function HasCSV(session) {
+    if (session.path_csv && fs.lstatSync(session.path_csv).isFile()) {
+        return true;
+    }
+    return false;
 }
 
 function ClearFile(path) {
