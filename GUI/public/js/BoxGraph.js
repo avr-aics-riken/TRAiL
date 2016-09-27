@@ -305,7 +305,7 @@ BoxGraph = function (clots, events, share) {
     }
 
     function ClickRight(d, i) {
-        var dialog = new GraphEdit(range_y, limit_range_y, Update);
+        var dialog = new GraphEdit(range_y, limit_range_y, "Standard Deviation", Update);
         dialog.Show();
     }
 

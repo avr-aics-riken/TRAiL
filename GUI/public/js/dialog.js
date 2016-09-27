@@ -22,7 +22,7 @@
 
 }
 
-GraphEdit = function (range_y, limit_range_y, Update) {
+GraphEdit = function (range_y, limit_range_y, rabel, Update) {
     var dialog = new Dialog();
     var id_input = ["range_y1", "range_y0"];
     var inputs;
@@ -39,7 +39,7 @@ GraphEdit = function (range_y, limit_range_y, Update) {
         var thead = table.append("thead").append("tr");
 
         thead.selectAll("th")
-            .data(["Standard Deviation", "Select Value", "Limit Value"])
+            .data([rabel, "Select Value", "Limit Value"])
             .enter()
             .append("th")
             .text(function (d) {
@@ -84,6 +84,11 @@ GraphEdit = function (range_y, limit_range_y, Update) {
             .text("OK")
             .attr("class", "dialog")
             .on("click", OnOK);
+
+        p.append("button")
+            .text("Cancel")
+            .attr("class", "dialog")
+            .on("click", OnCancel);
     }
 
     // On Reset buttom
@@ -98,6 +103,11 @@ GraphEdit = function (range_y, limit_range_y, Update) {
         range_y[1] = Math.max(temp[0], temp[1]);
         Update();
 
+        dialog.Clear();
+    }
+
+    // On Cancel buttom
+    function OnCancel() {
         dialog.Clear();
     }
 }
@@ -170,6 +180,11 @@ TimeEdit = function (share) {
             .text("OK")
             .attr("class", "dialog")
             .on("click", OnOK);
+
+        p.append("button")
+            .text("Cancel")
+            .attr("class", "dialog")
+            .on("click", OnCancel);
     }
 
     // On Reset single buttom
@@ -211,6 +226,11 @@ TimeEdit = function (share) {
         range_active[1] = Math.max(valueList[2], valueList[3]);
 
         PostData(share);
+    }
+
+    // On Cancel buttom
+    function OnCancel() {
+        dialog.Clear();
     }
 
     // Get Value List

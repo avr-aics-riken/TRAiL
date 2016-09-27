@@ -1,6 +1,9 @@
 var PlotPage = 0; // 0 : PageStatistic, 1 : PageGraphic
 function InitPage() {
     SetPathCSV();
+    document.getElementById("file_csv").onchange = function () {
+        document.getElementById("form_file").submit();
+    }
 }
 
 function PlotPageStatistic(csvArray) {

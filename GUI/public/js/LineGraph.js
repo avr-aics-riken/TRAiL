@@ -283,7 +283,7 @@ LineGraph = function (events, type_graph, share) {
     }
 
     function ClickRight(d, i) {
-        var dialog = new GraphEdit(range_y, limit_range_y, Update);
+        var dialog = new GraphEdit(range_y, limit_range_y, vertical_axis_label, Update);
         dialog.Show();
     }
 

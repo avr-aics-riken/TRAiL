@@ -1,6 +1,9 @@
 var PlotPage = 1; // 0 : PageStatistic, 1 : PageGraphic
 function InitPage() {
     SetPathCSV();
+    document.getElementById("file_csv").onchange = function () {
+        document.getElementById("form_file").submit();
+    }
 }
 
 function PlotPageGraphic(csvArray) {
@@ -31,7 +34,7 @@ function PlotPageGraphic(csvArray) {
     var id_buttom = ["button_comm", "button_calc", "button_hwpc0", "button_hwpc1", "button_hwpc2", "button_hwpc3"];
     for (var i = 0; i < NUM_GRAPH_LINE; i++) {
         // ボタンにイベントのON/OFFを反映
-        document.getElementById(id_buttom[i]).className = g_counters[i].unuse ? 'button_graph_gray' : share.pane_comm ? 'button_graph_on' : 'button_graph';
+        document.getElementById(id_buttom[i]).className = g_counters[i].unuse ? 'button_graph_gray' : share.show_line[i] ? 'button_graph_on' : 'button_graph';
 
         // ボタンにイベントを割り当て
         d3.select("#" + id_buttom[i])

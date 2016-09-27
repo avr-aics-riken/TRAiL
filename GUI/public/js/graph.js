@@ -144,12 +144,7 @@ function SetDataBySession(share) {
     if (session.rank_select != null) {
         share.rank_select = session.rank_select;
     }
-    share.pane_comm = session.pane_comm;
-    share.pane_calc = session.pane_calc;
-    share.pane_hwpc0 = session.pane_hwpc0;
-    share.pane_hwpc1 = session.pane_hwpc1;
-    share.pane_hwpc2 = session.pane_hwpc2;
-    share.pane_hwpc3 = session.pane_hwpc3;
+    share.show_line = session.show_line;
 }
 
 function SetRange(events, share) {
