@@ -32,6 +32,8 @@ LineGraph = function (events, type_graph, share) {
     var temp;
 
     function Plot() {
+        let processSettingList = getProcessSettingList();
+
         // スケール関数の生成
         var xScale = d3.scaleLinear()
             .domain(share.range_select)
@@ -112,36 +114,35 @@ LineGraph = function (events, type_graph, share) {
             .data(lines)
             .enter()
             .append("path")
+            .attr("stroke", function (d, i) {
+                return processSettingList[i].color;
+            })
+            .style("stroke-width", 3)
             .datum(function (d, i) {
-                return lines[i];
+                if (processSettingList[i].selected) {
+                    return lines[i];
+                } else {
+                    // filter メソッドにインデックス誤るバグがあるため、
+                    // filter機能を仮実装
+                    return [];
+                }
             })
             .attr("class", "line")
             .attr("d", line)
-            .attr("stroke", function (d, i) {
-                return GetColor(Math.floor(60 * i / num_rank));
-            })
-            .attr("stroke-opacity", function (d, i) {
-                if (share.rank_select == null) {
-                    return 1;
-                } else {
-                    return 0.1;
-                }
-            })
             .on("contextmenu", function (d, i) {
                 d3.event.preventDefault();
                 Click(d, i);
             });
 
-        if (share.rank_select != null) {
-            graph/*.append("g")
-				.selectAll("g")*/
-                .append("path")
+        if (share.rank_select != null && processSettingList[share.rank_select].selected) {
+            graph.append("path")
                 .datum(lines[share.rank_select])
                 .attr("class", "line")
                 .attr("d", line)
-                .attr("stroke", GetColor(Math.floor(60 * share.rank_select / num_rank)))
-                //.attr("stroke-width", 100)
-                .attr("stroke-opacity", 1);
+                .attr("stroke", function (d, i) {
+                    return processSettingList[share.rank_select].color;
+                })
+                .style("stroke-width", 5);
         }
 
         // TODO ラベルの生成
@@ -288,7 +289,7 @@ LineGraph = function (events, type_graph, share) {
     }
 
     function ResetRangeY() {
-        range_y = [limit_range_y[0], limit_range_y[1]];
+        range_y = [limit_range_y[0], limit_range_y[1] + (limit_range_y[1] - limit_range_y[0]) / 10];
     }
 }
 

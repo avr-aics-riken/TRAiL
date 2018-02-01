@@ -1,20 +1,3 @@
-input[type="text"],
-textarea {
-    outline: none;
-    border: 1px solid #aaa;
-    -webkit-transition: all .3s;
-    transition: all .3s;
-    border-radius: 5px;
-    padding: 10px;
-    //margin: 5px;
-}
-
-input[type="text"]:focus,
-textarea:focus {
-    box-shadow: 0 0 7px #1abc9c;
-    border: 1px solid #1abc9c;
-}
-
 td {
     vertical-align: top;
 }
@@ -128,7 +111,7 @@ rect {
 
 .line {
     fill: none;
-    stroke-width: 3.0px;
+    /* stroke-width: 3.0px; */
 }
 
 #controller {
@@ -137,7 +120,11 @@ rect {
     height: 100px;
 }
 
-#dialog_back {
+.dialog {
+    display: none;
+}
+
+.dialog_back {
     position: fixed;
     top:0px;
     left:0px;
@@ -147,14 +134,19 @@ rect {
     opacity: 0.5;
 }
 
-#dialog_body {
-    position: fixed;
+.dialog_body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    -moz-transform: translateY(-50%) translateX(-50%);
+    -webkit-transform: translateY(-50%) translateX(-50%);
+    -o-transform: translateY(-50%) translateX(-50%);
+    -ms-transform: translateY(-50%) translateX(-50%);
     border-radius: 6px 6px 6px 6px;
-    left:480px;
-    top:400px;
     background-color: white;
     box-shadow: 6px 6px 6px rgba(0,0,0,0.4);  /* CSS3 */
-    padding:40px;
+    padding:20px;
 }
 
 table.dialog {
@@ -162,8 +154,123 @@ table.dialog {
 }
 
 button.dialog {
-    width:60px;
+    width:auto;
     font-size: 14px;
     padding: 2px 4px 2px 4px;
     margin: 0px 4px 0px 4px;
+}
+
+ul.setting {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    -moz-padding-start: 0px;
+    -webkit-margin-before:0em;
+    -webkit-margin-after:0em;
+    -webkit-padding-start: 0px;
+}
+
+ul.setting li {
+    height: 28px;
+    list-style: none;
+}
+
+input[type="text"] {
+    border:solid 1px #ccc;
+    font-size:18px;
+    height: 22px;
+    margin: 2px;
+    text-align: right;
+    width: 200px;
+}
+
+input[type="number"] {
+    border:solid 1px #ccc;
+    font-size:18px;
+    height: 22px;
+    margin: 2px;
+    text-align: right;
+    width: 100px;
+}
+
+input[type="radio"].settingRadio {
+    margin-top: 8px;
+    float: left;
+}
+
+input[type="checkbox"].settingCheckbox {
+    margin-top: 8px;
+    float: left;
+}
+
+input[type="color"].settingColor {
+    border: 0px;
+    height: 28px;
+    padding: 0px;
+    width: 122px;
+}
+
+input[type="button"].settingButton {
+    font-size:16px;
+    margin: 2px;
+    width: 102px;
+}
+
+label.inputLabel {
+    float: left;
+    margin-top: 6px;
+    width:140px;
+}
+
+label.loopInputLabel {
+    float: left;
+    margin-top: 6px;
+    width:80px;
+}
+
+label.startInputLabel {
+    float: left;
+    margin-top: 6px;
+    width:60px;
+}
+
+label.endStepInputLabel {
+    width:60px;
+    margin-top: 6px;
+    margin-left: 100px;
+    float: left;
+}
+
+:placeholder-shown {
+    color: #ccc; 
+}
+
+::-webkit-input-placeholder {
+  color: #ccc;
+}
+
+::-moz-placeholder {
+  color: #ccc; opacity: 1;
+}
+
+:-moz-placeholder {
+  color: #ccc; opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #ccc;
+}
+
+table.processSettingTable
+{
+    width:460px;
+}
+
+table.processSettingTable  tr th,
+table.processSettingTable  tr td
+{
+    border: 1px solid #DDD;
+    height:28px;
+    text-align: center;
+    vertical-align: middle;
+    width:120px;
 }

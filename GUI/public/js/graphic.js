@@ -11,6 +11,10 @@ function PlotPageGraphic(csvArray) {
     if (events.length == 0) return;
     var clots = GetClots(events);
 
+    let rankMax = d3.max(events, event => { return event.rank; });
+    setProcessCount(rankMax + 1);
+    setDefaultProcessSettingList();
+
     var share = new ShareData();
     SetDataBySession(share);
     SetRange(events, share);
@@ -54,10 +58,14 @@ function PlotPageGraphic(csvArray) {
         PostData(share, "/statistic.html");
     }
 
-
     PlotSubView();
 
     GetCSVFile("input_mpi.csv", PlotMatrix, share);
+
+    var dialog = new SettingDialog(share.updater);
+    document.getElementById("settingButton").onclick = function () {
+        dialog.Show();
+    }
 
     function PlotMatrix(csvArray, share) {
         var matrix_comm = new Matrix(csvArray, share);
@@ -67,7 +75,7 @@ function PlotPageGraphic(csvArray) {
 
     function PlotSubView() {
         if (share.label_select == null || share.time_select == null || share.rank_select == null) return;
-        var event;
+        var event = null;
         for (var i = 0; i < events.length; i++) {
             if (share.rank_select != events[i].rank) continue;
             if (share.label_select != events[i].property.label) continue;
@@ -75,6 +83,10 @@ function PlotPageGraphic(csvArray) {
                 event = events[i];
                 break;
             }
+        }
+
+        if (event == null) {
+            return;
         }
 
         UpdatePropertyOfEvent(event);

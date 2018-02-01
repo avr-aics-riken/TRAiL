@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var url = require('url');
 var settings = require('./settings');
+var cookieParser = require('cookie-parser')
 
 var app = express();
 var server = http.createServer();
@@ -16,7 +17,7 @@ app.use(session({
     secret: 'secretKey'
 }));
 app.use(bodyParser());
-
+app.use(cookieParser());
 
 //ルーティング設定
 app.all('/', function (req, res) {
@@ -29,7 +30,7 @@ app.all('/home.html', function (req, res) {
 });
 
 app.get('/*.html', function (req, res) {
-    if (HasCSV(req.session)) {
+    if (HasCSV(req.cookies.csvPath)) {
         res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
         ResponsFile(res, req.url);
     } else {
@@ -38,7 +39,7 @@ app.get('/*.html', function (req, res) {
 });
 
 app.post('/*.html', function (req, res) {
-    if (HasCSV(req.session)) {
+    if (HasCSV(req.cookies.csvPath)) {
         res.writeHead(200, { 'Content-Type': 'text/html', charaset: 'UTF-8' });
         SetSession(req);
         ResponsFile(res, req.url);
@@ -65,15 +66,15 @@ app.post('/upload', function (req, res) {
                 return;
             }
 
-            if (HasCSV(req.session)) {
+            if (HasCSV(req.cookies.csvPath)) {
                 ClearFile(req.session.path_csv);
             }
-            req.session.path_csv = req.file.path;
+            res.cookie('csvPath', req.file.path, { maxAge: 86400000, httpOnly: true });
             req.session.share = new ShareData();
             req.session.share.file_name = req.file.originalname;
         }
 
-        if (HasCSV(req.session)) {
+        if (req.file && req.file.path && HasCSV(req.file.path)) {
             var url_parts = url.parse(req.url, true);
             var query = url_parts.query;
             if (typeof query.url_next !== 'undefined') {
@@ -96,8 +97,9 @@ app.post('/clear', function (req, res) {
 });
 
 app.all('/input.csv', function (req, res) {
-    if (req.session.path_csv) {
-        ResponsCsv(req, res, req.session.path_csv);
+    var csvPath = req.cookies.csvPath;
+    if (csvPath) {
+        ResponsCsv(req, res, csvPath);
     } else {
         ResponsCsv(req, res, __dirname + req.url);
     }
@@ -196,7 +198,7 @@ function ResponsCsv(req, res, path) {
     })
 
     stream.on('end', function () {
-         res.end();
+        res.end();
     });
 
     stream.on('error', function (error) {
@@ -238,31 +240,42 @@ function ResponsNotFound(res) {
     res.end();
 }
 
-function HasCSV(session) {
-    if (session.path_csv && fs.lstatSync(session.path_csv).isFile()) {
-        return true;
+function HasCSV(path) {
+    if (path) {
+        try {
+            return fs.statSync(path).isFile();
+        } catch (error) {
+            return false;
+        }
     }
     return false;
 }
 
 function ClearFile(path) {
-    if (fs.lstatSync(path).isFile()) {
+    try {
         fs.unlink(path, function (error) {
             if (error) {
                 console.log("Caught error removing update files : ", error);
             }
         });
+    } catch (error) {
+        console.log("Caught error removing update files : ", error);
     }
 }
 
 function ClearUploadedFiles() {
     var path = 'public/uploads';
-    if (fs.existsSync(path)) {
+    try {
         fs.readdirSync(path).forEach(function (file, index) {
             var curPath = path + "/" + file;
-            ClearFile(curPath);
+            var stat = fs.statSync(curPath);
+            var expiration = new Date();
+            expiration.setDate(expiration.getDate() - 2)
+            if (stat.atime < expiration) {
+                ClearFile(curPath);
+            }
         });
-    }
+    } catch (error) { }
 }
 
 ShareData = function () {

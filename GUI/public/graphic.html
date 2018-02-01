@@ -1,82 +1,162 @@
 ﻿<!DOCTYPE html>
 <html lang="ja">
+
 <head>
-    <meta charset="utf-8">
-    <title>TRAiL</title>
-    <script src="js/d3/d3.min.js"></script>
-    <script src="session_data.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/struct.js"></script>
-    <script src="js/dialog.js"></script>
-    <script src="js/graph.js"></script>
-    <script src="js/graphic.js"></script>
-    <script src="js/BarController.js"></script>
-    <script src="js/Histogram.js"></script>
-    <script src="js/BarGraph.js"></script>
-    <script src="js/LineGraph.js"></script>
-    <script src="js/Matrix.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/common.css" />
-    <link rel="stylesheet" type="text/css" href="css/graph.css" />
+	<meta charset="utf-8">
+	<title>TRAiL</title>
+	<script src="js/d3/d3.min.js"></script>
+	<script src="session_data.js"></script>
+	<script src="js/common.js"></script>
+	<script src="js/struct.js"></script>
+	<script src="js/dialog.js"></script>
+	<script src="js/graph.js"></script>
+	<script src="js/graphic.js"></script>
+	<script src="js/BarController.js"></script>
+	<script src="js/Histogram.js"></script>
+	<script src="js/BarGraph.js"></script>
+	<script src="js/LineGraph.js"></script>
+	<script src="js/Matrix.js"></script>
+	<script src="js/setting.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+	<link rel="stylesheet" type="text/css" href="css/graph.css" />
 </head>
+
 <body>
-    <h1>Graphic Page</h1>
-    <div class="main">
-        <input type="button" class="button_page" value="Home Page" onclick="window.location.href = '/home.html';" />
-        <input type="button" class="button_page" id="button_statistic_page" value="Statistic Page" />
-        <form id="form_file" method="post" action="/upload?url_next=/graphic.html" enctype="multipart/form-data" style="float:right">
-            <label for="file_csv" class="input_file">
-                Select CSV...
-                <input type="file" id="file_csv" name="file_csv" required style="display:none;" />
-            </label>&nbsp;
-            <input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
-        </form>
-        <table>
-            <tr><td>
-                <div id="controller"></div>
-            </td><td>
-                <div id="file_summary"></div>
-            </td></tr>
-        </table>
-        <table border="5px" width="100%" cellspacing=0>
-            <tr>
-                <td rowspan=3 width="1000px" height="700px">
-                    <div id="graph_bar"></div>
-                    <div class="button" style="margin:5px;">
-                        <input type="button" class="button_graph_on" id="button_comm" value="Communication">
-                        <input type="button" class="button_graph_on" id="button_calc" value="Calculation">
-                        <input type="button" class="button_graph" id="button_hwpc0" value="BANDWIDTH">
-                        <input type="button" class="button_graph" id="button_hwpc1" value="FLOPS">
-                        <input type="button" class="button_graph" id="button_hwpc2" value="VECTOR">
-                        <input type="button" class="button_graph" id="button_hwpc3" value="CACHE">
-                    </div>
-                    <div id="graph_line0"></div>
-                    <div id="graph_line1"></div>
-                    <div id="graph_line2"></div>
-                    <div id="graph_line3"></div>
-                    <div id="graph_line4"></div>
-                    <div id="graph_line5"></div>
-                </td>
-                <td width="350px" height="130px">
-                    <p>Property</p>
-                    <div id="property"></div>
-                </td>
-            </tr>
-            <tr>
-                <td width="350px" height="300px">
-                    <div id="histogram"></div>
-                </td>
-            </tr>
-            <tr>
-                <td width="350px" height="100%">
-                    <p>Communication Matrix</p>
-                    <div id="matrix_comm"></div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div id="dialog" />
-    <script>
-        GetCSVFile("input.csv", PlotPageGraphic);
-    </script>
+	<h1>Graphic Page</h1>
+	<div class="main">
+		<input type="button" class="button_page" value="Home Page" onclick="window.location.href = '/home.html';" />
+		<input type="button" class="button_page" id="button_statistic_page" value="Statistic Page" />
+		<input type="button" class="settingButton" id="settingButton" value="Setting" style="float:right" />
+		<form id="form_file" method="post" action="/upload?url_next=/graphic.html" enctype="multipart/form-data" style="float:right">
+			<label for="file_csv" class="input_file">
+				Select CSV...
+				<input type="file" id="file_csv" name="file_csv" required style="display:none;" />
+			</label>&nbsp;
+			<input id="path_csv" placeholder="No Selected File" disabled="disabled" class="path_file" />
+		</form>
+		<table>
+			<tr>
+				<td>
+					<div id="controller"></div>
+				</td>
+				<td>
+					<div id="file_summary"></div>
+				</td>
+			</tr>
+		</table>
+		<table border="5px" width="100%" cellspacing="0">
+			<tr>
+				<td rowspan="3" width="1000px" height="700px">
+					<div id="graph_bar"></div>
+					<div class="button" style="margin:5px;">
+						<input type="button" class="button_graph_on" id="button_comm" value="Communication">
+						<input type="button" class="button_graph_on" id="button_calc" value="Calculation">
+						<input type="button" class="button_graph" id="button_hwpc0" value="BANDWIDTH">
+						<input type="button" class="button_graph" id="button_hwpc1" value="FLOPS">
+						<input type="button" class="button_graph" id="button_hwpc2" value="VECTOR">
+						<input type="button" class="button_graph" id="button_hwpc3" value="CACHE">
+					</div>
+					<div id="graph_line0"></div>
+					<div id="graph_line1"></div>
+					<div id="graph_line2"></div>
+					<div id="graph_line3"></div>
+					<div id="graph_line4"></div>
+					<div id="graph_line5"></div>
+				</td>
+				<td width="350px" height="130px">
+					<p>Property</p>
+					<div id="property"></div>
+				</td>
+			</tr>
+			<tr>
+				<td width="350px" height="300px">
+					<div id="histogram"></div>
+				</td>
+			</tr>
+			<tr>
+				<td width="350px" height="100%">
+					<p>Communication Matrix</p>
+					<div id="matrix_comm"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="dialog" class="dialog"></div>
+	<div id="processDisplaySettingDialog" class="dialog">
+		<div class="dialog_back"></div>
+		<div class="dialog_body">
+			<h3>Process Display Setting</h3>
+			<div>
+				<ul class="setting">
+					<li>
+						<input type="radio" id="selectProcessAll" name="selectProcess" value="all" checked="checked" class="settingRadio">
+						<label for="selectProcessAll" class="inputLabel">All Rank</label>
+					</li>
+					<li>
+						<input type="radio" id="selectProcessSelect" name="selectProcess" value="select" class="settingRadio">
+						<label for="selectProcessSelect" class="inputLabel">Select Rank</label>
+					</li>
+				</ul>
+				<div style="margin-left:20px">
+					<ul class="setting">
+						<li>
+							<input type="checkbox" id="selectRankIdListCheckbox" class="settingCheckbox">
+							<label for="selectRankIdListCheckbox" class="inputLabel">Rank ID List :</label>
+							<input type="text" id="rankIdList" placeholder="0,1,2" onclick="this.select(0,this.value.length)">
+						</li>
+						<li>
+							<input type="checkbox" id="selectRankRangeListCheckbox" class="settingCheckbox">
+							<label for="selectRankRangeListCheckbox" class="inputLabel">Rank Range List :</label>
+							<input type="text" id="rankRangeList" placeholder="0-8,16-32" onclick="this.select(0,this.value.length)">
+						</li>
+						<li>
+							<input type="checkbox" id="selectRankLoopCheckbox" class="settingCheckbox">
+							<label for="selectRankLoopCheckbox" class="loopInputLabel">Loop</label>
+							<label for="rankLoopStart" class="startInputLabel">Start :</label>
+							<input type="number" id="rankLoopStart" min="0" placeholder="0" onclick="this.select(0,this.value.length)">
+						</li>
+						<li>
+							<label for="rankLoopEnd" class="endStepInputLabel">End :</label>
+							<input type="number" id="rankLoopEnd" min="0" placeholder="16" onclick="this.select(0,this.value.length)">
+						</li>
+						<li>
+							<label for="rankLoopStep" class="endStepInputLabel">Step :</label>
+							<input type="number" id="rankLoopStep" min="1" placeholder="2" onclick="this.select(0,this.value.length)">
+						</li>
+					</ul>
+				</div>
+				<div align="right">
+					<input type="button" id="applyDialogButton" class="settingButton" value="Apply">
+				</div>
+			</div>
+			<div style="margin:4px;">
+				<div>
+					<table class="processSettingTable">
+						<thead>
+							<tr>
+								<th>Display</th>
+								<th>Rank Id</th>
+								<th>Color</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div style="max-height:400px; overflow-y:auto;">
+					<table id="processSettingTable" class="processSettingTable">
+						<tbody id="processSettingTableBody"></tbody>
+					</table>
+				</div>
+			</div>
+			<div align="right">
+				<input type="button" id="resetDialogButton" class="settingButton" value="Color Reset">
+				<input type="button" id="okDialogButton" class="settingButton" value="OK">
+				<input type="button" id="cancelDialogButton" class="settingButton" value="Cancel">
+			</div>
+		</div>
+	</div>
+	<script>
+		GetCSVFile("input.csv", PlotPageGraphic);
+	</script>
 </body>
+
 </html>

@@ -6,9 +6,10 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "body-parser": "*",
+    "cookie-parser": "*",
     "express": "*",
     "express-session": "*",
-    "body-parser": "*",
     "multer": "*"
   }
 }

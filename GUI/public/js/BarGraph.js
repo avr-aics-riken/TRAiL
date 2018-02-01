@@ -2,34 +2,40 @@ BarGraph = function (events, clots, share) {
     // 幅（ width ）と高さ（ height ）
     var width = 1400;
     var height = 400;
+    var initialHeight = 400;
     var PADDING = 35;
     var num_rank = d3.max(events, function (d) { return d.rank; }) + 1;
     var size_font = 18;
     var show = true;
+    var max_height = 40;
 
     share.updater.Add(Update);
     this.Width = function (w) { width = w; };
-    this.Height = function (h) { height = h; };
+    this.Height = function (h) { initialHeight = h; };
     this.Show = Show;
     this.Update = Update;
     this.Reset = ResetRangeY;
 
     var elementId = "graph_bar";
 
-    var range_y = [];
-    var limit_range_y = d3.extent(events, function (d) { return d.rank; });    limit_range_y[1]++;
-    ResetRangeY();
+    //var range_y = [];
+
+    var limit_range_y = d3.extent(events, function (d) { return d.rank; }); limit_range_y[1]++;
+    //ResetRangeY();
 
     var measure = new Measure(elementId)
 
     function Plot() {
+        var selectedProcessList = getSelectedProcessList();
+        height = Math.min(selectedProcessList.length * max_height + PADDING * 2, initialHeight);
+
         // スケール関数の生成
         var xScale = d3.scaleLinear()
             .domain(share.range_select)
             .range([0, width - PADDING * 2]);
 
         var yScale = d3.scaleLinear()
-            .domain(range_y)
+            .domain([-0.5, selectedProcessList.length - 0.5])
             .range([height - PADDING * 2, 0]);
 
         var xScaleInv = d3.scaleLinear()
@@ -38,7 +44,7 @@ BarGraph = function (events, clots, share) {
 
         var yScaleInv = d3.scaleLinear()
             .domain([height - PADDING * 2, 0])
-            .range(range_y);
+            .range([-0.5, selectedProcessList.length - 0.5]);
 
         var zoom = d3.zoom()
             .on("zoom", Zoom);
@@ -58,10 +64,10 @@ BarGraph = function (events, clots, share) {
             .text("Rank")
             .attr("x", PADDING / 2)
             .attr("y", (PADDING + size_font) / 2)
-            .on("contextmenu", function (d, i) {
-                d3.event.preventDefault();
-                ClickRight(d, i);
-            })
+            // .on("contextmenu", function (d, i) {
+            //     d3.event.preventDefault();
+            //     ClickRight(d, i);
+            // })
             .append("svg:title")
             .text("To show Edit Dialog, right-click on this.");
 
@@ -90,7 +96,15 @@ BarGraph = function (events, clots, share) {
             .attr("fill", "white")
             .attr("opacity", 0);
 
-        var height_bar = (height - PADDING * 2) / Math.abs(range_y[1] - range_y[0]);
+        var marginMaxNum = 10;
+        var margin = 1;
+        if (marginMaxNum < selectedProcessList.length) {
+            margin = 0;
+        }
+        var height_bar = (height - PADDING * 2) / selectedProcessList.length - margin * 2;
+        if (max_height < height_bar) {
+            height_bar = max_height;
+        }
 
         // Draw bar
         graph.append("g")
@@ -99,6 +113,9 @@ BarGraph = function (events, clots, share) {
             .enter()
             .append("rect")
             .filter(function (d) {
+                if (!selectedProcessList.includes(d.rank)) {
+                    return false;
+                }
                 var ret = (share.range_select[0] <= d.time[1]);
                 ret &= (d.time[0] <= share.range_select[1]);
                 return ret;
@@ -107,7 +124,8 @@ BarGraph = function (events, clots, share) {
                 return xScale(d.time[0]);
             })
             .attr("y", function (d) {
-                return yScale(d.rank) - height_bar;
+                var index = selectedProcessList.indexOf(d.rank);
+                return yScale(index) - height_bar / 2 - margin;
             })
             .attr("width", function (d) {
                 return xScale(d.time[1]) - xScale(d.time[0]);
@@ -115,12 +133,6 @@ BarGraph = function (events, clots, share) {
             .attr("height", height_bar)
             .attr("stroke", "none")
             .attr("stroke-width", 1)
-            .attr("rx", function (d) {
-                return ((height - PADDING * 2) / num_rank * 0.2);
-            })
-            .attr("ry", function (d) {
-                return ((height - PADDING * 2) / num_rank * 0.2);
-            })
             .attr("fill", function (d) {
                 return d.property.color;
             })
@@ -137,6 +149,9 @@ BarGraph = function (events, clots, share) {
                 .enter()
                 .append("text")
                 .filter(function (d, i) {
+                    if (!selectedProcessList.includes(d.rank)) {
+                        return false;
+                    }
                     var size_text = d.property.label.length * size_font / 2;
                     var ret = (xScale(d.time[1]) - xScale(share.range_select[0])) >= size_text;
                     ret &= (xScale(d.time[1]) - xScale(d.time[0])) >= size_text;
@@ -157,7 +172,8 @@ BarGraph = function (events, clots, share) {
                     }
                 })
                 .attr("y", function (d) {
-                    return yScale(d.rank + 1) - (height_bar - size_font) / 2;
+                    var index = selectedProcessList.indexOf(d.rank);
+                    return yScale(index) + size_font / 2;
                 })
                 .attr("fill", "black")
                 .on("contextmenu", function (d, i) {
@@ -172,7 +188,8 @@ BarGraph = function (events, clots, share) {
 
         // Y 軸の定義
         var yAxis = d3.axisLeft(yScale)
-            .ticks(Math.min(Math.abs(range_y[1] - range_y[0]), (height - PADDING * 2) / 40));
+            .ticks(Math.min(selectedProcessList.length, (height - PADDING * 2) / 40))
+            .tickFormat(function (index) { return selectedProcessList[index]; });
 
         // X 軸の生成
         svg.append("g")
@@ -217,8 +234,14 @@ BarGraph = function (events, clots, share) {
                 var mousePos = d3.mouse(document.getElementById(elementId));
                 if (Math.abs(mousePosStart[0] - mousePos[0]) + Math.abs(mousePosStart[1] - mousePos[1]) < 1) return;
                 if (Math.abs(mousePosStart[0] - mousePos[0]) < Math.abs(mousePosStart[1] - mousePos[1])) {
-                    range_y[0] = yScaleInv(Math.max(mousePosStart[1], mousePos[1]) - PADDING);
-                    range_y[1] = yScaleInv(Math.min(mousePosStart[1], mousePos[1]) - PADDING);
+                    // TOOD select
+                    var minIndex = Math.round(yScaleInv(Math.max(mousePosStart[1], mousePos[1]) - PADDING)) + 1;
+                    var maxIndex = Math.round(yScaleInv(Math.min(mousePosStart[1], mousePos[1]) - PADDING));
+                    var newSelectedProcessList = [];
+                    for (let index = minIndex; index < maxIndex; index++) {
+                        newSelectedProcessList.push(selectedProcessList[index]);
+                    }
+                    setSelectedProcessList(newSelectedProcessList);
                     Update();
                 } else {
                     share.range_active[0] = xScaleInv(Math.min(mousePosStart[0], mousePos[0]) - PADDING);
@@ -235,7 +258,7 @@ BarGraph = function (events, clots, share) {
         show = s;
         if (show && w != null && h != null) {
             width = w;
-            height = h;
+            initialHeight = h;
         }
         Update();
     }
@@ -283,12 +306,12 @@ BarGraph = function (events, clots, share) {
         share.updater.Run();
     }
 
-    function ClickRight(d, i) {
-        var dialog = new GraphEdit(range_y, limit_range_y, "Rank", Update);
-        dialog.Show();
-    }
+    // function ClickRight(d, i) {
+    //     var dialog = new GraphEdit(range_y, limit_range_y, "Rank", Update);
+    //     dialog.Show();
+    // }
 
     function ResetRangeY() {
-        range_y = [limit_range_y[0], limit_range_y[1]];
+        // range_y = [limit_range_y[0], limit_range_y[1]];
     }
 }

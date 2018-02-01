@@ -2,15 +2,14 @@
     var dialog = d3.select("#dialog");
 
     this.Generate = function () {
+        dialog.style('display', 'block');
         dialog.append("div")
-            .attr("id", "dialog_back");
+            .attr("id", "dialog_back")
+            .classed('dialog_back', true);
 
         var dialog_body = dialog.append("div")
-            .attr("id", "dialog_body");
-
-        dialog_body.append("p")
-            .append("text")
-            .text("Graph Edit");
+            .attr("id", "dialog_body")
+            .classed('dialog_body', true);
 
         return dialog_body;
     }
@@ -19,7 +18,203 @@
         dialog.selectAll("div")
             .remove();
     }
+}
 
+SettingDialog = function (updater) {
+    var processSettingDialog = new ProcessSettingDialog(updater);
+    var dialog = new Dialog();
+
+    // Show dialog
+    this.Show = function () {
+        var dialog_body = dialog.Generate();
+
+        dialog_body.append("h3")
+            .append("text")
+            .text("Setting Menu");
+
+        var div = dialog_body.append("div")
+            .style("float", "right");
+
+        div.append("p")
+            .append("text")
+            .text("Process Setting");
+
+        div.append("button")
+            .text("Process Display Setting")
+            .on("click", onProcessSetting);
+
+        div.append("p")
+            .append("text")
+            .text("Range Setting");
+
+        div.append("p")
+            .append("text")
+            .text("Line Graph Setting");
+
+        div.append("button")
+            .text("close")
+            .attr("class", "dialog")
+            .on("click", onClose);
+    }
+
+    function onProcessSetting() {
+        dialog.Clear();
+        processSettingDialog.Show();
+    }
+
+    // On OK buttom
+    function onClose() {
+        dialog.Clear();
+    }
+}
+
+ProcessSettingDialog = function (updater) {
+    var dialog = d3.select("#processDisplaySettingDialog");
+    let settingList;
+
+    refleshInput();
+
+    dialog.select('#applyDialogButton').on('click', onApply);
+    dialog.select('#resetDialogButton').on('click', onReset);
+    dialog.select('#okDialogButton').on('click', onOK);
+    dialog.select('#cancelDialogButton').on('click', onCancel);
+    dialog.selectAll('input[name="selectProcess"]').on('change', refleshInput);
+
+    // Show dialog
+    this.Show = function () {
+        dialog.style('display', 'block');
+        settingList = getProcessSettingList();
+        drawTable();
+    }
+
+    function onApply() {
+        settingList.forEach(element => {
+            element.selected = false;
+        });
+
+        if (dialog.select('input[name="selectProcess"]:checked').node().value == 'all') {
+            for (let i = 0; i < settingList.length; i++) {
+                settingList[i].selected = true;
+            }
+        } else {
+            if (dialog.select('#selectRankIdListCheckbox').property('checked')) {
+                let text = dialog.select('#rankIdList').property('value');
+                let rankIdList = text.split(',');
+                rankIdList.forEach(rankId => {
+                    let rank = toInt(rankId);
+                    if (rank < settingList.length) {
+                        settingList[rank].selected = true;
+                    }
+                });
+            }
+
+            if (dialog.select('#selectRankRangeListCheckbox').property('checked')) {
+                let text = dialog.select('#rankRangeList').property('value');
+                let rankRangeList = text.split(',');
+                rankRangeList.forEach(rankRangeText => {
+                    const rankRange = rankRangeText.split('-');
+                    const rankStart = toInt(rankRange[0]);
+                    const rankEnd = toInt(rankRange[1]);
+                    for (let rank = rankStart; rank <= rankEnd; ++rank) {
+                        if (rank < settingList.length) {
+                            settingList[rank].selected = true;
+                        } else {
+                            break;
+                        }
+                    }
+                });
+            }
+
+            if (dialog.select('#selectRankLoopCheckbox').property('checked')) {
+                const rankStart = toInt(dialog.select('#rankLoopStart').property('value'));
+                const rankEnd = toInt(dialog.select('#rankLoopEnd').property('value'));
+                const rankStep = toInt(dialog.select('#rankLoopStep').property('value'));
+                for (let rank = rankStart; rank <= rankEnd; rank += rankStep) {
+                    if (rank < settingList.length) {
+                        settingList[rank].selected = true;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        drawTable();
+    }
+
+    // On Reset buttom
+    function onReset() {
+        for (let i = 0; i < settingList.length; ++i) {
+            settingList[i].color = getProcessColor(i);
+        }
+        drawTable();
+    }
+
+    // On OK buttom
+    function onOK() {
+        onApply();
+        setProcessSettingList(settingList);
+        dialog.style('display', 'none');
+        updater.Run();
+    }
+
+    // On Cancel buttom
+    function onCancel() {
+        dialog.style('display', 'none');
+    }
+
+    function drawTable() {
+        var body = dialog.select('#processSettingTableBody');
+        body.selectAll('tr').remove();
+        for (let i = 0; i < settingList.length; ++i) {
+            var row = body.append('tr');
+            row.append('td')
+                .append('input')
+                .attr('type', 'checkbox')
+                .attr('disabled', 'disabled')
+                .attr('checked', settingList[i].selected ? 'checked' : null);
+
+            row.append('td')
+                .text(i);
+
+            row.append('td')
+                .append('input')
+                .attr('type', 'color')
+                .attr('value', settingList[i].color)
+                .attr('class', 'settingColor')
+                .on('change', function () {
+                    settingList[i].color = this.value;
+                });
+        }
+    }
+
+    function refleshInput() {
+        const disabled = 'disabled';
+        if (dialog.select('input[name="selectProcess"]:checked').node().value == 'all') {
+            dialog.select('#selectRankIdListCheckbox').property(disabled, disabled);
+            dialog.select('#selectRankRangeListCheckbox').property(disabled, disabled);
+            dialog.select('#selectRankLoopCheckbox').property(disabled, disabled);
+            dialog.select('#rankIdList').property(disabled, disabled);
+            dialog.select('#rankRangeList').property(disabled, disabled);
+            dialog.select('#rankLoopStart').property(disabled, disabled);
+            dialog.select('#rankLoopEnd').property(disabled, disabled);
+            dialog.select('#rankLoopStep').property(disabled, disabled);
+        } else {
+            dialog.select('#selectRankIdListCheckbox').attr(disabled, null);
+            dialog.select('#selectRankIdListCheckbox').attr(disabled, null);
+            dialog.select('#selectRankRangeListCheckbox').attr(disabled, null);
+            dialog.select('#selectRankLoopCheckbox').attr(disabled, null);
+            dialog.select('#rankIdList').attr(disabled, null);
+            dialog.select('#rankRangeList').attr(disabled, null);
+            dialog.select('#rankLoopStart').attr(disabled, null);
+            dialog.select('#rankLoopEnd').attr(disabled, null);
+            dialog.select('#rankLoopStep').attr(disabled, null);
+        }
+    }
+
+    function toInt(value) {
+        return Math.floor(Number(value));
+    }
 }
 
 GraphEdit = function (range_y, limit_range_y, rabel, Update) {
@@ -30,6 +225,10 @@ GraphEdit = function (range_y, limit_range_y, rabel, Update) {
     // Show dialog
     this.Show = function () {
         var dialog_body = dialog.Generate();
+
+        dialog_body.append("p")
+            .append("text")
+            .text("Time Edit");
 
         // Create table
         var table = dialog_body.append("table")
@@ -122,6 +321,10 @@ TimeEdit = function (share) {
     // Show dialog
     this.Show = function () {
         var dialog_body = dialog.Generate();
+        dialog_body.append("p")
+            .append("text")
+            .text("Time Edit");
+
         var ranges = [range_select, range_active, range_limit];
 
         // Create table
@@ -160,7 +363,7 @@ TimeEdit = function (share) {
             .append("input")
             .attr("type", "number")
             .attr("value", function (d) { return d; })
-            .attr("disabled", function () { return (count++ < 4 ? null : true); } );
+            .attr("disabled", function () { return (count++ < 4 ? null : true); });
 
         trows.filter(function (d) { return d != range_limit })
             .append("button")
